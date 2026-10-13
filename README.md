@@ -1,3 +1,5 @@
+<img src="src/icon.svg" alt="Trinity" width="100" height="100">
+
 # Trinity
 
 Row and column layouts for Craft CMS 5 Matrix fields.
