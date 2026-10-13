@@ -1,0 +1,49 @@
+{
+  "name": "statikbe/craft-trinity",
+  "description": "Row and column layouts for Craft CMS Matrix fields: a row of 1–3 columns with one nested entry per column, width-aware validation and field conditions",
+  "type": "craft-plugin",
+  "keywords": [
+    "craft",
+    "cms",
+    "craftcms",
+    "craft-plugin",
+    "matrix",
+    "grid",
+    "columns",
+    "content-builder"
+  ],
+  "support": {
+    "docs": "https://github.com/statikbe/craft-trinity/blob/main/README.md",
+    "issues": "https://github.com/statikbe/craft-trinity/issues"
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Statik",
+      "homepage": "https://www.statik.be"
+    }
+  ],
+  "require": {
+    "php": "^8.2",
+    "craftcms/cms": "^5.10.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "statikbe\\trinity\\": "src/"
+    }
+  },
+  "extra": {
+    "name": "Trinity",
+    "handle": "trinity",
+    "developer": "Statik",
+    "developerUrl": "https://www.statik.be",
+    "documentationUrl": "https://github.com/statikbe/craft-trinity/blob/main/README.md",
+    "class": "statikbe\\trinity\\Trinity"
+  },
+  "config": {
+    "allow-plugins": {
+      "yiisoft/yii2-composer": true,
+      "craftcms/plugin-installer": true
+    }
+  }
+}
