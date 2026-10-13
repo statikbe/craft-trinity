@@ -1,5 +1,13 @@
 # Release Notes for Trinity
 
+## 1.0.0-beta.2 - 2026-10-13
+
+### Added
+- Plugin icon
+
+### Changed
+- The Composer package no longer includes tests, CI and code style files
+
 ## 1.0.0-beta.1 - 2026-10-13
 
 First beta, extracted from the Statik base install's "Content row" block.
