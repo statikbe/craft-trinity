@@ -8,6 +8,8 @@ A **row** is a nested entry in your content builder with a layout of 1–3 colum
 column, left to right. Everything is native Craft: drafts, revisions, propagation, search and eager loading keep working, and so
 do the fields when Trinity's control panel layer is unavailable.
 
+![Two rows in the control panel: a 1/3 + 2/3 and a 2/3 + 1/3 layout, each cell card showing its width on the page](docs/images/rows.png)
+
 Your project owns the entry types and the templates. Trinity provides:
 
 - **Layout maths**: column widths, the effective width on the page, mobile order, breakpoints and responsive image sizes
@@ -175,6 +177,10 @@ In a field layout, open a field's settings → *Visibility Conditions* → *Entr
 *Column span* and *Column width* are only offered in the layouts of cell types (layouts with the mobile order field). A cell
 outside a row has no column: *is not one of* matches it. Their values are stored as hundredths (`100`, `67`, `50`, `33`, …).
 
+![The Row cells condition: Row cells is not one of FAQ](docs/images/condition-row-cells.png)
+
+![The Column width condition: Column width is one of full page width](docs/images/condition-column-width.png)
+
 ## Control panel
 
 On the cells field, Trinity:
@@ -190,6 +196,10 @@ On the cells field, Trinity:
 
 Empty columns only exist in the control panel: saving a row with fewer cells than columns fails validation. The layer is made
 for a content builder Matrix in **blocks** view (inline-editable blocks).
+
+![An empty column with the Add content menu, listing the cell types](docs/images/add-content.png)
+
+![A row with three columns: two empty ones with Add content and Merge with left, and types that need a wider column disabled with their minimum width](docs/images/empty-columns.png)
 
 ## Validation
 
