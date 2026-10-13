@@ -23,6 +23,7 @@ use statikbe\trinity\layout\LayoutConfig;
 use statikbe\trinity\models\Settings;
 use statikbe\trinity\services\Rows;
 use statikbe\trinity\variables\TrinityVariable;
+use statikbe\trinity\web\assets\cp\TrinityCpAsset;
 use yii\base\Event;
 
 /**
@@ -79,14 +80,15 @@ class Trinity extends Plugin
             $this->getRows()->validateRow($event->sender);
         });
 
-        // The control panel layer reads its settings from the row's cells field
+        // The control panel layer comes with the row's cells field and reads its settings from it
         Event::on(Matrix::class, Field::EVENT_DEFINE_INPUT_HTML, function(DefineFieldHtmlEvent $event) {
             /** @var Matrix $field */
             $field = $event->sender;
             if ($field->handle === $this->getSettings()->cellsField) {
+                Craft::$app->getView()->registerAssetBundle(TrinityCpAsset::class);
                 $event->html = Html::tag('div', '', [
                     'hidden' => true,
-                    'data' => ['grid-builder' => $this->getRows()->cpConfig($event->element)],
+                    'data' => ['trinity' => $this->getRows()->cpConfig($event->element)],
                 ]) . $event->html;
             }
         });

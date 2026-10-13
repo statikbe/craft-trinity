@@ -257,7 +257,12 @@ class Rows extends Component
             }
         }
 
+        $settings = $this->getSettings();
         return [
+            'handles' => [
+                'layoutField' => $settings->layoutField,
+                'cellsField' => $settings->cellsField,
+            ],
             'layouts' => Layout::LAYOUTS,
             'allowedLayouts' => $layouts->allowedLayouts($pageWidth),
             'contextWidth' => $pageWidth,

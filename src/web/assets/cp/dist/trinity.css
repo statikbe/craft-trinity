@@ -1,0 +1,188 @@
+/* Content row columns (trinity.js): the cards laid out like the row's layout, in sixths */
+.trinity {
+  position: relative;
+  padding-inline: 20px;
+}
+
+.trinity > ul.elements {
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--m, 14px) var(--s, 10px);
+  padding-bottom: 12px;
+}
+
+.trinity > ul.elements > li {
+  position: relative;
+  min-width: 0;
+}
+
+.trinity > .zilch {
+  display: none;
+}
+
+/* Width of the column on the page: on the bottom-right border, clear of the card header (::after, so it sits on top of the positioned card) */
+.trinity > ul.elements > li[data-trinity-width]::after {
+  content: attr(data-trinity-width);
+  position: absolute;
+  right: 8px;
+  bottom: -9px;
+  z-index: 3;
+  padding: 0 6px;
+  font-size: 11px;
+  line-height: 18px;
+  /* the card's colours (copied by trinity.js), else the row's (inherited, e.g. for empty columns), else grey */
+  color: var(--trinity-badge-text, var(--custom-text-color, var(--gray-600)));
+  background: var(--trinity-badge-bg, var(--custom-titlebar-bg-color, var(--gray-050)));
+  border: 1px solid var(--trinity-badge-border, var(--custom-border-color, var(--hairline-color)));
+  border-radius: 9px;
+  white-space: nowrap;
+  max-width: calc(100% - 16px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+.trinity > ul.elements > li.trinity__invalid > .element,
+.trinity > ul.elements > li.trinity__overflow > .element {
+  outline: 2px solid var(--error-color);
+  outline-offset: 2px;
+}
+
+.trinity > ul.elements > li.trinity__invalid::after,
+.trinity > ul.elements > li.trinity__overflow::after {
+  color: var(--error-color);
+}
+
+/* Empty column */
+.trinity__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 110px;
+  padding: 12px;
+  border: 2px dashed var(--custom-border-color, var(--gray-300));
+  border-radius: var(--large-border-radius, 7px);
+}
+
+/* A row with errors after a failed save (trinity.js): a red line before the block, and its empty columns in red */
+.matrixblock.trinity-row--error::after {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  z-index: 2;
+  width: 3px;
+  background-color: var(--error-color);
+  border-start-start-radius: var(--large-border-radius, 5px);
+  border-end-start-radius: var(--large-border-radius, 5px);
+  pointer-events: none;
+}
+
+.trinity-row--error .trinity__empty {
+  border-color: var(--error-color);
+  background-color: color-mix(in srgb, var(--error-color) 6%, transparent);
+}
+
+.trinity-row--error .trinity > ul.elements > li.trinity__empty::after {
+  color: var(--error-color);
+}
+
+.trinity__merge {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+}
+
+/* While a card is dragged: the empty columns of other rows it can be dropped on, and the ones it doesn't fit in */
+/* In the target row's entry type colours (inherited from its block), blue when the row has none */
+.trinity__empty.trinity__drop-target {
+  border-color: var(--custom-text-color, var(--link-color, #2563eb));
+  background-color: var(--custom-titlebar-bg-color, color-mix(in srgb, var(--link-color, #2563eb) 6%, transparent));
+}
+
+.trinity__empty.trinity__drop-target--over {
+  border-style: solid;
+  background-color: var(--custom-border-color, color-mix(in srgb, var(--link-color, #2563eb) 15%, transparent));
+}
+
+.trinity__empty.trinity__drop-target--disabled {
+  opacity: 0.4;
+}
+
+/* Buttons in empty columns stop the mouseup that ends a card drag; while dragging, they don't take the pointer */
+.trinity-dragging .trinity__empty * {
+  pointer-events: none;
+}
+
+/* A card that is being moved to another row */
+.trinity > ul.elements > li.trinity__moving {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Buttons in an empty column in the row's entry type colours */
+.trinity__empty .btn {
+  color: var(--custom-text-color, inherit);
+}
+
+.trinity__empty .btn.dashed {
+  border-color: var(--custom-border-color, var(--gray-300));
+}
+
+.trinity__merge .btn {
+  background-color: var(--custom-titlebar-bg-color, var(--gray-100));
+}
+
+.trinity__merge .btn:hover,
+.trinity__merge .btn:focus-visible {
+  background-color: var(--custom-border-color, var(--gray-200));
+}
+
+/* Add a column on the left/right: thin bars along the sides, visible on hover and keyboard focus */
+.trinity__add {
+  /* top and height follow the cards (set in trinity.js) */
+  position: absolute;
+  width: 16px;
+  padding: 0;
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 1;
+  /* the row's entry type colours, like the merge buttons; blue when the row has none */
+  color: var(--custom-text-color, var(--white, #fff));
+  background: var(--custom-titlebar-bg-color, var(--link-color, #0b69a3));
+  border: 1px solid var(--custom-border-color, transparent);
+  border-radius: 8px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, background-color 0.15s;
+}
+
+.trinity__add:hover,
+.trinity__add:focus-visible {
+  background: var(--custom-border-color, var(--link-color, #0b69a3));
+}
+
+.trinity__add--left {
+  left: 0;
+}
+
+.trinity__add--right {
+  right: 0;
+}
+
+.trinity:hover > .trinity__add,
+.trinity > .trinity__add:focus-visible {
+  opacity: 1;
+}
+
+.trinity > .trinity__add.hidden {
+  display: none;
+}
+
+/* The selected layout is not allowed on this page (2/3 wide) */
+.btngroup .btn.trinity__layout-invalid {
+  box-shadow: inset 0 0 0 2px var(--error-color);
+}
