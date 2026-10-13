@@ -4,7 +4,7 @@ return [
     // Condition rules
     'Column span' => 'Kolombreedte in de rij',
     'Column width' => 'Kolombreedte op de pagina',
-    'Content row blocks' => 'Blokken in de rij',
+    'Row cells' => 'Cellen in de rij',
     'full page width' => 'volledige paginabreedte',
     'full row' => 'volledige rij',
     '{width} of the page' => '{width} van de pagina',

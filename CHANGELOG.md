@@ -1,5 +1,13 @@
 # Release Notes for Trinity
 
+## 1.0.0-beta.3 - 2026-10-13
+
+### Changed
+- The "Content row blocks" condition rule is now "Row cells" (`RowCellsConditionRule`, was `ContentRowBlocksConditionRule`)
+
+> [!WARNING]
+> Field conditions are stored with their class name. Replace `statikbe\trinity\conditions\ContentRowBlocksConditionRule` with `statikbe\trinity\conditions\RowCellsConditionRule` in your project config before updating, or Craft drops the condition.
+
 ## 1.0.0-beta.2 - 2026-10-13
 
 ### Added

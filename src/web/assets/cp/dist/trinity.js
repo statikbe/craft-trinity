@@ -33,7 +33,7 @@
     const rows = new Set();
 
     /**
-     * Re-renders the form so field conditions that depend on the blocks in a row ("Content row blocks") apply. Craft only
+     * Re-renders the form so field conditions that depend on the blocks in a row ("Row cells") apply. Craft only
      * re-checks conditions when the form data changes, and adding or removing a card (a nested entry) doesn't change it;
      * it also doesn't update conditional fields inside blocks then. Debounced: several changes give one refresh.
      * Waits while another slideout is open: re-rendering the form under a new block's slideout breaks its "Cancel".
@@ -352,7 +352,7 @@
             // Content is added through the empty columns, not the field's own "Add" button
             this.nem.$createBtn?.addClass('hidden').closest('.expandable-button--collapsed').addClass('hidden');
 
-            // Field conditions on the blocks in the row (ContentRowBlocksConditionRule) only change when the types change
+            // Field conditions on the blocks in the row (RowCellsConditionRule) only change when the types change
             const blockTypes = [...new Set(this.cardTypeIds())].sort().join(',');
             if (this.rendered && this.config.hasBlockConditions && blockTypes !== this.blockTypes) {
                 refreshConditions(this.nem.elementEditor);

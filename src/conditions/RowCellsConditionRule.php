@@ -15,15 +15,15 @@ use craft\elements\Entry;
 use statikbe\trinity\Trinity;
 
 /**
- * Entry condition rule "Content row blocks": whether a row has a cell of one of the chosen types in its columns
- * (the cells field). Use it as a field condition in the content row's field layout, e.g. to only show
- * "Background Color" when the row has no FAQ. Rows without columns, and other entries, count as having no blocks.
+ * Entry condition rule "Row cells": whether a row has a cell of one of the chosen types in its columns
+ * (the cells field). Use it as a field condition in the row entry type's field layout, e.g. to only show
+ * "Background Color" when the row has no FAQ. Rows without columns, and other entries, count as having no cells.
  */
-class ContentRowBlocksConditionRule extends BaseMultiSelectConditionRule implements ElementConditionRuleInterface
+class RowCellsConditionRule extends BaseMultiSelectConditionRule implements ElementConditionRuleInterface
 {
     public function getLabel(): string
     {
-        return Craft::t('trinity', 'Content row blocks');
+        return Craft::t('trinity', 'Row cells');
     }
 
     public function getExclusiveQueryParams(): array
@@ -63,15 +63,15 @@ class ContentRowBlocksConditionRule extends BaseMultiSelectConditionRule impleme
 
     public function matchElement(ElementInterface $element): bool
     {
-        return $this->matchValue($this->blockTypeUids($element));
+        return $this->matchValue($this->cellTypeUids($element));
     }
 
     /**
-     * Entry type UIDs of the blocks in the row's columns, disabled ones included (the editor sees them too).
+     * Entry type UIDs of the cells in the row's columns, disabled ones included (the editor sees them too).
      *
      * @return string[]
      */
-    private function blockTypeUids(ElementInterface $element): array
+    private function cellTypeUids(ElementInterface $element): array
     {
         $handle = Trinity::getInstance()->getSettings()->cellsField;
         if (!$element instanceof Entry || !$element->getFieldLayout()?->getFieldByHandle($handle)) {

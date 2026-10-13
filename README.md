@@ -12,7 +12,7 @@ Your project owns the entry types and the templates. Trinity provides:
 
 - **Layout maths**: column widths, the effective width on the page, mobile order, breakpoints and responsive image sizes
 - **Validation**: the number of cells matches the layout, every cell type fits its column, no blocked combinations
-- **Field conditions**: *Column width*, *Column span* and *Content row blocks*
+- **Field conditions**: *Column width*, *Column span* and *Row cells*
 - **A control panel layer**: cells shown as the row's columns, empty columns, adding and merging columns, moving a cell to another row
 - **Twig helpers**: the data your templates need to render a row
 - **`craft trinity/doctor`**: checks your setup
@@ -165,7 +165,7 @@ Use container queries, not viewport breakpoints: the same row can be on a full-w
 
 In a field layout, open a field's settings → *Visibility Conditions* → *Entry Condition*:
 
-- **Content row blocks** (in the row entry type's layout): whether the row has a cell of one of the chosen types, e.g. a
+- **Row cells** (in the row entry type's layout): whether the row has a cell of one of the chosen types, e.g. a
   background colour only when the row has no FAQ. The control panel re-checks it when cells are added or removed.
 - **Column span** (in a cell type's layout): the cell's share of the row: full row, 2/3, 1/2 or 1/3 of the row, the same on
   every page. For conditions about the layout, e.g. a field only when the cell has the row to itself.

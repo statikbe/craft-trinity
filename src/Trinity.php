@@ -17,7 +17,7 @@ use craft\helpers\Html;
 use craft\web\twig\variables\CraftVariable;
 use statikbe\trinity\conditions\ColumnSpanConditionRule;
 use statikbe\trinity\conditions\ColumnWidthConditionRule;
-use statikbe\trinity\conditions\ContentRowBlocksConditionRule;
+use statikbe\trinity\conditions\RowCellsConditionRule;
 use statikbe\trinity\layout\Layout;
 use statikbe\trinity\layout\LayoutConfig;
 use statikbe\trinity\models\Settings;
@@ -60,9 +60,9 @@ class Trinity extends Plugin
             $variable->set('trinity', TrinityVariable::class);
         });
 
-        // "Content row blocks" condition rule, e.g. to show a row's field only for some cell types
+        // "Row cells" condition rule, e.g. to show a row's field only for some cell types
         Event::on(EntryCondition::class, BaseCondition::EVENT_REGISTER_CONDITION_RULES, function(RegisterConditionRulesEvent $event) {
-            $event->conditionRules[] = ContentRowBlocksConditionRule::class;
+            $event->conditionRules[] = RowCellsConditionRule::class;
         });
 
         // "Column width" and "Column span" condition rules, to show a cell's field only at some widths. Only for field conditions in

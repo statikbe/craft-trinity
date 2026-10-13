@@ -11,7 +11,7 @@ use craft\elements\ElementCollection;
 use craft\elements\Entry;
 use craft\fields\Matrix;
 use craft\models\EntryType;
-use statikbe\trinity\conditions\ContentRowBlocksConditionRule;
+use statikbe\trinity\conditions\RowCellsConditionRule;
 use statikbe\trinity\events\DefinePageWidthEvent;
 use statikbe\trinity\events\RegisterPageWidthsEvent;
 use statikbe\trinity\layout\Layout;
@@ -285,7 +285,7 @@ class Rows extends Component
     }
 
     /**
-     * Whether a field in the row's layout is shown or hidden by the "Content row blocks" condition rule: the control panel then
+     * Whether a field in the row's layout is shown or hidden by the "Row cells" condition rule: the control panel then
      * re-checks the field conditions when the cells in a row change.
      */
     public function hasBlockConditions(): bool
@@ -293,7 +293,7 @@ class Rows extends Component
         $rowType = Craft::$app->getEntries()->getEntryTypeByHandle($this->getSettings()->rowEntryType);
         foreach ($rowType?->getFieldLayout()->getCustomFieldElements() ?? [] as $layoutElement) {
             foreach ($layoutElement->getElementCondition()?->getConditionRules() ?? [] as $rule) {
-                if ($rule instanceof ContentRowBlocksConditionRule) {
+                if ($rule instanceof RowCellsConditionRule) {
                     return true;
                 }
             }

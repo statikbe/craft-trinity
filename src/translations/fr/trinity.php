@@ -4,7 +4,7 @@ return [
     // Condition rules
     'Column span' => 'Largeur de la colonne dans la rangée',
     'Column width' => 'Largeur de la colonne sur la page',
-    'Content row blocks' => 'Blocs de la rangée',
+    'Row cells' => 'Cellules de la rangée',
     'full page width' => 'pleine largeur de la page',
     'full row' => 'rangée entière',
     '{width} of the page' => '{width} de la page',
