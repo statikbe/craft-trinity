@@ -3,11 +3,27 @@
 namespace statikbe\trinity;
 
 use Craft;
+use craft\base\conditions\BaseCondition;
+use craft\base\Element;
+use craft\base\Field;
 use craft\base\Model;
 use craft\base\Plugin;
+use craft\elements\conditions\entries\EntryCondition;
+use craft\elements\Entry;
+use craft\events\DefineFieldHtmlEvent;
+use craft\events\RegisterConditionRulesEvent;
+use craft\fields\Matrix;
+use craft\helpers\Html;
+use craft\web\twig\variables\CraftVariable;
+use statikbe\trinity\conditions\ColumnSpanConditionRule;
+use statikbe\trinity\conditions\ColumnWidthConditionRule;
+use statikbe\trinity\conditions\ContentRowBlocksConditionRule;
 use statikbe\trinity\layout\Layout;
 use statikbe\trinity\layout\LayoutConfig;
 use statikbe\trinity\models\Settings;
+use statikbe\trinity\services\Rows;
+use statikbe\trinity\variables\TrinityVariable;
+use yii\base\Event;
 
 /**
  * Trinity: row and column layouts for Craft CMS Matrix fields.
@@ -24,9 +40,62 @@ class Trinity extends Plugin
 
     private ?Layout $_layouts = null;
 
+    public static function config(): array
+    {
+        return [
+            'components' => [
+                'rows' => Rows::class,
+            ],
+        ];
+    }
+
     public function init(): void
     {
         parent::init();
+
+        Event::on(CraftVariable::class, CraftVariable::EVENT_INIT, function(Event $event) {
+            /** @var CraftVariable $variable */
+            $variable = $event->sender;
+            $variable->set('trinity', TrinityVariable::class);
+        });
+
+        // "Content row blocks" condition rule, e.g. to show a row's field only for some cell types
+        Event::on(EntryCondition::class, BaseCondition::EVENT_REGISTER_CONDITION_RULES, function(RegisterConditionRulesEvent $event) {
+            $event->conditionRules[] = ContentRowBlocksConditionRule::class;
+        });
+
+        // "Column width" and "Column span" condition rules, to show a cell's field only at some widths. Only for field conditions in
+        // the layout of a cell type (every cell type has the mobile order field), not for filters on entry indexes.
+        Event::on(EntryCondition::class, BaseCondition::EVENT_REGISTER_CONDITION_RULES, function(RegisterConditionRulesEvent $event) {
+            $fieldLayouts = $event->sender->getFieldLayouts();
+            if (count($fieldLayouts) === 1 && $fieldLayouts[0]->getFieldByHandle($this->getSettings()->mobileOrderField)) {
+                $event->conditionRules[] = ColumnWidthConditionRule::class;
+                $event->conditionRules[] = ColumnSpanConditionRule::class;
+            }
+        });
+
+        // Layout, number of columns and cell types per column width
+        Event::on(Entry::class, Element::EVENT_AFTER_VALIDATE, function(Event $event) {
+            $this->getRows()->validateRow($event->sender);
+        });
+
+        // The control panel layer reads its settings from the row's cells field
+        Event::on(Matrix::class, Field::EVENT_DEFINE_INPUT_HTML, function(DefineFieldHtmlEvent $event) {
+            /** @var Matrix $field */
+            $field = $event->sender;
+            if ($field->handle === $this->getSettings()->cellsField) {
+                $event->html = Html::tag('div', '', [
+                    'hidden' => true,
+                    'data' => ['grid-builder' => $this->getRows()->cpConfig($event->element)],
+                ]) . $event->html;
+            }
+        });
+    }
+
+    public function getRows(): Rows
+    {
+        /** @var Rows */
+        return $this->get('rows');
     }
 
     /**
