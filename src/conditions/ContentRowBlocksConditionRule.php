@@ -78,6 +78,7 @@ class ContentRowBlocksConditionRule extends BaseMultiSelectConditionRule impleme
             return [];
         }
         $value = $element->getFieldValue($handle);
+        /** @var Entry[] $cells */
         $cells = $value instanceof EntryQuery ? (clone $value)->status(null)->all() : ($value instanceof ElementCollection ? $value->all() : []);
         return array_values(array_unique(array_map(fn(Entry $cell) => $cell->getType()->uid, $cells)));
     }

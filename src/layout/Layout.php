@@ -15,7 +15,7 @@ final class Layout
 {
     /** Layout value => column widths as fractions of the row, left to right. Stored as the layout field's option values. */
     public const LAYOUTS = [
-        'full' => [1],
+        'full' => [1.0],
         'halves' => [1 / 2, 1 / 2],
         'thirds' => [1 / 3, 1 / 3, 1 / 3],
         'thirdTwoThirds' => [1 / 3, 2 / 3],
@@ -221,7 +221,7 @@ final class Layout
             $unique[$this->formatWidth($width)] = (float)$width;
         }
         rsort($unique);
-        return array_values($unique);
+        return $unique;
     }
 
     /**
