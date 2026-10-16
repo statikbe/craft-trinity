@@ -92,7 +92,8 @@ return [
 | `maxWidthPerType` | none | Cell type handle => maximum width on the page. A type with a maximum below full can't fill a row on its own. |
 | `blockedCombinations` | none | Pairs of cell type handles that can't be in the same row. The same handle twice allows at most one of that type per row. |
 | `containers` | `[480 => 448, 660 => 628, 820 => 788, 980 => 948, 1200 => 1168]` | Viewport width => page container width (px), matching your CSS; for image sizes |
-| `columnGap` | `48` | Gap between columns (px), matching your CSS |
+| `columnGap` | `48` | Gap between columns (px), matching your CSS; also the gap between the content builder and a sidebar |
+| `columnGaps` | none | Layout value => gap (px) for layouts with another gap between their columns, e.g. `['thirds' => 24]` |
 | `columnMinWidth` | `256` | Narrowest a column gets (px) before the row stacks its columns |
 | `mobileSize` | `'95vw'` | Image size below the first container breakpoint |
 
@@ -134,9 +135,9 @@ type:
 | `pageWidth` | Width of the content builder on this page, e.g. `0.6667` |
 | `breakpoint` | Row width (px) from which the columns sit side by side: their narrowest column is then `columnMinWidth` wide (560 for halves, 864 for layouts with a 1/3 column) |
 | `cellTypes` | The cells' types, left to right, e.g. `['text', 'image']` |
-| `columns` | Per cell, left to right: `cell` (the entry), `type`, `fraction` (share of the row), `width` (share of the page), `mobileOrder` (position while stacked, or `null` when every column is on *Auto*), `sizes` and `srcsetSizes` (for an image that fills the column) |
+| `columns` | Per cell, left to right: `cell` (the entry), `type`, `fraction` (share of the row as text: `1/3`, `1/2`, `2/3` or `full`), `width` (share of the page, a number, e.g. `0.3333`), `mobileOrder` (position while stacked, or `null` when every column is on *Auto*), `sizes` and `srcsetSizes` (for an image that fills the column) |
 
-Cells beyond the layout's columns (the layout was changed without removing them) come last with a `fraction` of 1; validation
+Cells beyond the layout's columns (the layout was changed without removing them) come last with a `fraction` of `full`; validation
 prevents saving that.
 
 Fields of a cell that its field layout hides (any field condition, e.g. *Column width*) are emptied before you get the cell, so
@@ -157,10 +158,10 @@ Use container queries, not viewport breakpoints: the same row can be on a full-w
 
 - **Columns side by side**: from `breakpoint` (the row's width), e.g. container sizes `--container-cols-2: 560px` and
   `--container-cols-3: 864px` with `@cols-2:grid-cols-2` / `@cols-3:grid-cols-3`. Change `columnMinWidth` / `columnGap`
-  together with them.
+  together with them. A layout with its own gap in `columnGaps` has its own breakpoint (thirds with a 24px gap: 816px).
 - **Mobile order**: below the breakpoint, give each column `order-{{ column.mobileOrder }}` when it's set. Only the visual
   order changes; the source order (screen readers, tabbing) stays left to right.
-- **Image sizes** follow `containers`, `columnGap` and `narrowFromViewport`: keep them in sync with your CSS. A mismatch only
+- **Image sizes** follow `containers`, `columnGap`, `columnGaps` and `narrowFromViewport`: keep them in sync with your CSS. A mismatch only
   gives slightly wrong `sizes`, never a broken layout.
 
 ## Field conditions

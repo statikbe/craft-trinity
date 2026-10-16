@@ -76,11 +76,11 @@ class Rows extends Component
 
     /**
      * Everything the templates need to render a row: its layout, the width of the content builder on the page, the breakpoint
-     * from which its columns sit side by side, and per column the cell entry, its type, its share of the row, its effective
-     * width (fraction of the page), its position while stacked (see Layout::mobileOrder()) and responsive image sizes for an
-     * image filling the column.
+     * from which its columns sit side by side, and per column the cell entry, its type, its share of the row (readable: "1/3",
+     * "1/2", "2/3", "full"), its effective width (fraction of the page), its position while stacked (see Layout::mobileOrder())
+     * and responsive image sizes for an image filling the column.
      *
-     * @return array{layout: string, pageWidth: float, breakpoint: int, cellTypes: string[], columns: array<array{cell: Entry, type: string, fraction: float, width: float, mobileOrder: int|null, sizes: string, srcsetSizes: string[]}>}
+     * @return array{layout: string, pageWidth: float, breakpoint: int, cellTypes: string[], columns: array<array{cell: Entry, type: string, fraction: string, width: float, mobileOrder: int|null, sizes: string, srcsetSizes: string[]}>}
      */
     public function row(Entry $row): array
     {
@@ -101,7 +101,7 @@ class Rows extends Component
             $columns[] = [
                 'cell' => $cell,
                 'type' => $this->cellType($cell),
-                'fraction' => $fraction,
+                'fraction' => $layouts->formatWidth($fraction),
                 'width' => $width,
                 'mobileOrder' => $mobileOrder[$i] ?? null,
             ] + $layouts->imageSizes($layout, $fraction, $pageWidth);

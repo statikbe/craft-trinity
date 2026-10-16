@@ -31,3 +31,9 @@ it('skips page widths outside minColumnWidth to 1 with a warning', function() {
 it('sorts containers by viewport width', function() {
     expect(array_keys(LayoutConfig::fromArray(['containers' => [1200 => 1168, 480 => 448]])->containers))->toBe([480, 1200]);
 });
+
+it('keeps column gaps of known layouts and reports the others', function() {
+    $config = LayoutConfig::fromArray(['columnGaps' => ['thirds' => 24, 'quarters' => 16, 'halves' => 'wide']]);
+    expect($config->columnGaps)->toBe(['thirds' => 24])
+        ->and($config->warnings)->toHaveCount(2);
+});

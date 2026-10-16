@@ -83,6 +83,13 @@ class Settings extends Model
     /** Gap between columns in px (the project's column gap in CSS) */
     public int $columnGap = 48;
 
+    /**
+     * Layout value => gap between its columns in px, for layouts whose gap differs from $columnGap, e.g. ['thirds' => 24]
+     *
+     * @var array<string, int>
+     */
+    public array $columnGaps = [];
+
     /** Narrowest column (px) at which columns still sit side by side; below that a row stacks its columns */
     public int $columnMinWidth = 256;
 

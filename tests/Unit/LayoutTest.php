@@ -107,6 +107,11 @@ describe('breakpoint', function() {
     it('follows columnMinWidth and columnGap', function() {
         expect(layout(['columnMinWidth' => 200, 'columnGap' => 32])->breakpoint('halves'))->toBe(432);
     });
+
+    it('follows columnGaps for a layout', function() {
+        expect(layout(['columnGaps' => ['thirds' => 24]])->breakpoint('thirds'))->toBe(816)
+            ->and(layout(['columnGaps' => ['thirds' => 24]])->breakpoint('thirdTwoThirds'))->toBe(864);
+    });
 });
 
 describe('imageSizes', function() {
@@ -125,6 +130,14 @@ describe('imageSizes', function() {
         'thirds, 3/4 page' => ['thirds', 1 / 3, 3 / 4, '(min-width: 660px) and (max-width: 819px) 628px, (min-width: 820px) and (max-width: 979px) 788px, (min-width: 980px) and (max-width: 1199px) 699px, (min-width: 1200px) 256px'],
         'thirdTwoThirds 2/3 column, 3/4 page' => ['thirdTwoThirds', 2 / 3, 3 / 4, '(min-width: 660px) and (max-width: 819px) 628px, (min-width: 820px) and (max-width: 979px) 788px, (min-width: 980px) and (max-width: 1199px) 699px, (min-width: 1200px) 560px'],
     ]);
+
+    it('uses the gap of the layout for its columns, and columnGap next to a sidebar', function() {
+        $layout = layout(['columnGaps' => ['thirds' => 24], 'narrowFromViewport' => 980]);
+        expect($layout->imageSizes('thirds', 1 / 3)['srcsetSizes'])->toBe(['448w', '628w', '788w', '300w', '373w'])
+            ->and($layout->imageSizes('thirdTwoThirds', 1 / 3)['srcsetSizes'])->toBe(['448w', '628w', '788w', '284w', '357w'])
+            // 3/4 page: the builder is 3/4 × (1168 + 48) − 48 = 864 wide, its thirds 3 columns with 24px gaps
+            ->and($layout->imageSizes('thirds', 1 / 3, 3 / 4)['srcsetSizes'])->toBe(['448w', '628w', '788w', '699w', '272w']);
+    });
 
     it('lists every srcset width once', function() {
         expect(layout()->imageSizes('full', 1)['srcsetSizes'])->toBe(['448w', '628w', '788w', '948w', '1168w']);

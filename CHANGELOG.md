@@ -1,5 +1,15 @@
 # Release Notes for Trinity
 
+## 1.0.0 - 2026-10-16
+
+The first stable release.
+
+### Added
+- `columnGaps` setting: a gap per layout (px) for layouts whose columns have another gap than `columnGap`, e.g. `['thirds' => 24]`. Breakpoints and image sizes of that layout use it
+
+### Changed
+- `fraction` in the columns of `craft.trinity.row()` is the share of the row as text (`1/3`, `1/2`, `2/3`, `full`) instead of a number; the number was the same as `width` on a full-width page. Use `width` for calculations.
+
 ## 1.0.0-beta.3 - 2026-10-13
 
 ### Changed

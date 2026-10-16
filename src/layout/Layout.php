@@ -153,12 +153,20 @@ final class Layout
     }
 
     /**
+     * Gap (px) between the columns of a layout: its columnGaps value, else columnGap.
+     */
+    public function columnGap(string $layout): int
+    {
+        return $this->config->columnGaps[$layout] ?? $this->config->columnGap;
+    }
+
+    /**
      * Row width (px) from which a row shows its columns side by side: its narrowest column is then at least columnMinWidth wide,
      * e.g. 560px for halves and 864px for layouts with a 1/3 column (with the defaults). Match the project's container queries.
      */
     public function breakpoint(string $layout): int
     {
-        $gap = $this->config->columnGap;
+        $gap = $this->columnGap($layout);
         return (int)round(($this->config->columnMinWidth + $gap) / min($this->fractions($layout)) - $gap);
     }
 
@@ -172,6 +180,7 @@ final class Layout
     {
         $containers = $this->config->containers;
         $gap = $this->config->columnGap;
+        $layoutGap = $this->columnGap($layout);
         $viewports = array_keys($containers);
         $sizes = ['(max-width: ' . ($viewports[0] - 1) . 'px) ' . $this->config->mobileSize];
         $srcset = [];
@@ -182,7 +191,7 @@ final class Layout
                 $builder = (int)round($pageWidth * ($builder + $gap) - $gap);
             }
             $width = $builder >= $this->breakpoint($layout)
-                ? (int)round($fraction * ($builder + $gap) - $gap)
+                ? (int)round($fraction * ($builder + $layoutGap) - $layoutGap)
                 : $builder;
 
             $next = $viewports[$i + 1] ?? null;

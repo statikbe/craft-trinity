@@ -16,6 +16,7 @@ final class LayoutConfig
      * @param array<string, float> $maxWidthPerType
      * @param array<array{string, string}> $blockedCombinations
      * @param array<int, int> $containers
+     * @param array<string, int> $columnGaps
      * @param string[] $warnings
      */
     public function __construct(
@@ -27,6 +28,7 @@ final class LayoutConfig
         public readonly array $blockedCombinations = [],
         public readonly array $containers = [480 => 448, 660 => 628, 820 => 788, 980 => 948, 1200 => 1168],
         public readonly int $columnGap = 48,
+        public readonly array $columnGaps = [],
         public readonly int $columnMinWidth = 256,
         public readonly string $mobileSize = '95vw',
         public readonly array $warnings = [],
@@ -44,6 +46,7 @@ final class LayoutConfig
             'blockedCombinations' => $settings->blockedCombinations,
             'containers' => $settings->containers,
             'columnGap' => $settings->columnGap,
+            'columnGaps' => $settings->columnGaps,
             'columnMinWidth' => $settings->columnMinWidth,
             'mobileSize' => $settings->mobileSize,
         ]);
@@ -84,6 +87,15 @@ final class LayoutConfig
             }
         }
 
+        $columnGaps = [];
+        foreach ((array)($config['columnGaps'] ?? []) as $layout => $gap) {
+            if (isset(Layout::LAYOUTS[$layout]) && is_numeric($gap) && $gap >= 0) {
+                $columnGaps[$layout] = (int)$gap;
+            } else {
+                $warnings[] = "columnGaps.{$layout}: the key must be a layout (" . implode(', ', array_keys(Layout::LAYOUTS)) . ') and the gap a number of px, e.g. 24.';
+            }
+        }
+
         $containers = (array)($config['containers'] ?? $defaults->containers);
         ksort($containers);
 
@@ -96,6 +108,7 @@ final class LayoutConfig
             blockedCombinations: $blockedCombinations,
             containers: array_map('intval', $containers),
             columnGap: (int)($config['columnGap'] ?? $defaults->columnGap),
+            columnGaps: $columnGaps,
             columnMinWidth: (int)($config['columnMinWidth'] ?? $defaults->columnMinWidth),
             mobileSize: (string)($config['mobileSize'] ?? $defaults->mobileSize),
             warnings: $warnings,
