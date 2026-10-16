@@ -15,7 +15,7 @@ use yii\console\ExitCode;
 
 /**
  * Checks that the project's rows match Trinity's settings: the handles in config/trinity.php, the layout options, the mobile
- * order field on every cell type, the cell types named in the settings and the condition rules stored in project config.
+ * order field on every cell type that isn't full width only, the cell types named in the settings and the condition rules stored in project config.
  */
 class DoctorController extends Controller
 {
@@ -69,7 +69,9 @@ class DoctorController extends Controller
             }
         }
 
-        // Cells field and the cell types
+        // Cells field and the cell types; full-width-only types (minWidthPerType 1) are alone in their row, so they don't need
+        // the mobile order field
+        $config = LayoutConfig::fromSettings($settings);
         $cellsField = $fields->getFieldByHandle($settings->cellsField);
         $cellTypes = [];
         if (!$cellsField instanceof Matrix) {
@@ -77,7 +79,7 @@ class DoctorController extends Controller
         } else {
             foreach ($cellsField->getEntryTypes() as $entryType) {
                 $cellTypes[] = $entryType->handle;
-                if (!$entryType->getFieldLayout()->getFieldByHandle($settings->mobileOrderField)) {
+                if (!$config->isFullWidthOnly($entryType->handle) && !$entryType->getFieldLayout()->getFieldByHandle($settings->mobileOrderField)) {
                     $this->addError("Cell type \"{$entryType->handle}\" has no \"{$settings->mobileOrderField}\" field (mobileOrderField): it can't be ordered on mobile and the column conditions aren't offered in its field layout.");
                 }
                 if ($settings->cellTypePrefix !== '' && !str_starts_with($entryType->handle, $settings->cellTypePrefix)) {
@@ -87,7 +89,6 @@ class DoctorController extends Controller
         }
 
         // Cell types named in the settings
-        $config = LayoutConfig::fromSettings($settings);
         foreach ($config->warnings as $warning) {
             $this->addError("config/trinity.php → {$warning}");
         }

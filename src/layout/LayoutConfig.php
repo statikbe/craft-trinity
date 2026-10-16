@@ -114,4 +114,14 @@ final class LayoutConfig
             warnings: $warnings,
         );
     }
+
+    /**
+     * Whether a cell type can only be the full width of the page (minWidthPerType 1): it is always alone in its row, so it
+     * has no position to take on mobile and no column width to vary by.
+     */
+    public function isFullWidthOnly(string $cellType): bool
+    {
+        // A little room for minimum widths written as a sum of fractions, e.g. 1 / 3 + 2 / 3
+        return ($this->minWidthPerType[$cellType] ?? 0) >= 1 - 0.001;
+    }
 }

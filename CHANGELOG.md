@@ -1,5 +1,10 @@
 # Release Notes for Trinity
 
+## 1.0.1 - 2026-10-16
+
+### Fixed
+- `craft trinity/doctor` no longer asks for the mobile order field on cell types that can only be full width (`minWidthPerType` 1): they are alone in their row
+
 ## 1.0.0 - 2026-10-16
 
 The first stable release.

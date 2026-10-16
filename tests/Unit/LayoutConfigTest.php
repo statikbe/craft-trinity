@@ -32,6 +32,14 @@ it('sorts containers by viewport width', function() {
     expect(array_keys(LayoutConfig::fromArray(['containers' => [1200 => 1168, 480 => 448]])->containers))->toBe([480, 1200]);
 });
 
+it('knows the cell types that can only be full width', function() {
+    $config = LayoutConfig::fromArray(['minWidthPerType' => ['cellOverview' => 1, 'cellSum' => 1 / 3 + 2 / 3, 'cellCard' => 1 / 2]]);
+    expect($config->isFullWidthOnly('cellOverview'))->toBeTrue()
+        ->and($config->isFullWidthOnly('cellSum'))->toBeTrue()
+        ->and($config->isFullWidthOnly('cellCard'))->toBeFalse()
+        ->and($config->isFullWidthOnly('cellText'))->toBeFalse();
+});
+
 it('keeps column gaps of known layouts and reports the others', function() {
     $config = LayoutConfig::fromArray(['columnGaps' => ['thirds' => 24, 'quarters' => 16, 'halves' => 'wide']]);
     expect($config->columnGaps)->toBe(['thirds' => 24])

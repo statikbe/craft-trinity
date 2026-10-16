@@ -41,7 +41,7 @@ control panel:
 | Layout field (`gridLayout`) | A **Button Group** with these option values: `full`, `halves`, `thirds`, `thirdTwoThirds`, `twoThirdsThird`. Leave out the ones you don't want. Icons: `@statikbe/trinity/icons/layouts/<value>.svg`. |
 | Cells field (`gridCells`) | A **Matrix** field in **cards** view, max 3 entries: one cell per column, left to right. |
 | Cell entry types (`cell…`) | One entry type per kind of column content, e.g. `cellText`, `cellImage`. Their handle without the prefix is the cell's type in templates and CSS (`cellText` → `text`). |
-| Mobile order field (`mobileOrder`) | A **Dropdown** with the options *Auto* (empty value), `1`, `2`, `3`, on **every** cell type. |
+| Mobile order field (`mobileOrder`) | A **Dropdown** with the options *Auto* (empty value), `1`, `2`, `3`, on **every** cell type, except types that can only be full width (`minWidthPerType` 1): they are alone in their row. |
 
 The layouts are fixed: the validation, the conditions and the control panel layer are built around them.
 
