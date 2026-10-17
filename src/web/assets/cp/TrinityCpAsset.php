@@ -41,7 +41,7 @@ class TrinityCpAsset extends AssetBundle
             'Merge with right',
             'Min. width {width}',
             'Not with {type}',
-            'Another background than the row above: the spacing doesn’t apply',
+            'Not available: the row above has another background',
             'Only between rows with the same background',
             'Space above',
             'This block can’t be in the same row as {type}: choose another block or move it.',

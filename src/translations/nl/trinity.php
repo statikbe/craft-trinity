@@ -27,7 +27,7 @@ return [
     'Merge with left' => 'Samenvoegen met links',
     'Merge with right' => 'Samenvoegen met rechts',
     'Not with {type}' => 'Niet met {type}',
-    'Another background than the row above: the spacing doesn’t apply' => 'Andere achtergrond dan de rij erboven: de ruimte geldt hier niet',
+    'Not available: the row above has another background' => 'Niet beschikbaar: de rij erboven heeft een andere achtergrond',
     'Only between rows with the same background' => 'Alleen tussen rijen met dezelfde achtergrond',
     'Space above' => 'Ruimte boven',
     'not with {type}' => 'niet met {type}',

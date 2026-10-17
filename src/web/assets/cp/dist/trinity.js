@@ -13,7 +13,7 @@
  * Empty columns only exist here: saving a row with fewer blocks than columns fails validation (Rows::validateRow()).
  *  - with rowSpacingField set, that Button Group is hidden and its options are shown as a compact "Space above" control at the
  *    top of every row in the content builder but the first; the block's gap follows the choice (close / extra) as a hint. With
- *    rowBackgroundField, the control is disabled on a row whose background differs from the row above.
+ *    rowBackgroundField, a row whose background differs from the row above shows why instead of the options.
  * Settings and field handles come from Rows::cpConfig(), in a [data-trinity] element in the cells field.
  * When Craft's CP changes and this breaks, the native fields keep working without it.
  */
@@ -171,6 +171,8 @@
             }).prependTo(this.$row);
             $('<span/>', {class: 'trinity-spacing__label', text: Craft.t('trinity', 'Space above')}).appendTo($bar);
             const $group = $('<div/>', {class: 'trinity-spacing__options', role: 'group', 'aria-label': Craft.t('trinity', 'Space above')}).appendTo($bar);
+            // Shown instead of the options when the spacing doesn't apply (see updateBuilder())
+            $('<span/>', {class: 'trinity-spacing__reason', text: Craft.t('trinity', 'Not available: the row above has another background')}).appendTo($bar);
             const buttons = listbox.$options.toArray().map((option, index) => {
                 const $button = $('<button/>', {type: 'button', class: 'trinity-spacing__option'})
                     .append($(option).children().clone())
@@ -805,9 +807,7 @@
                 return;
             }
             block.classList.toggle('trinity-spacing-inactive', inactive);
-            bar.title = inactive
-                ? Craft.t('trinity', 'Another background than the row above: the spacing doesn’t apply')
-                : Craft.t('trinity', 'Only between rows with the same background');
+            bar.title = inactive ? '' : Craft.t('trinity', 'Only between rows with the same background');
             bar.querySelectorAll('.trinity-spacing__option').forEach((button) => {
                 button.disabled = inactive;
             });

@@ -1,5 +1,13 @@
 # Release Notes for Trinity
 
+## 1.1.1 - 2026-10-17
+
+### Changed
+- On a row whose background differs from the row above, the "Space above" control shows why it isn't available ("Not available: the row above has another background") instead of dimmed, disabled options
+
+### Fixed
+- The "Space above" label and the options or reason next to it are aligned on their text baseline
+
 ## 1.1.0 - 2026-10-17
 
 ### Added

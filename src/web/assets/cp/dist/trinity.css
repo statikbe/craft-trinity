@@ -190,7 +190,8 @@
 /* "Space above" (rowSpacingField): a compact control at the top of a row's block; the block's gap follows the choice */
 .matrixblock > .trinity-spacing {
   display: flex;
-  align-items: center;
+  /* The label and the options or reason have different sizes: align their text, not their boxes */
+  align-items: baseline;
   gap: 8px;
   margin: -2px 0 8px;
   padding: 4px 6px;
@@ -258,17 +259,19 @@
   outline-offset: -2px;
 }
 
-/* Another background than the row above: the spacing doesn't apply */
+/* Another background than the row above: the spacing doesn't apply, the reason replaces the options */
+.trinity-spacing__reason {
+  display: none;
+  font-style: italic;
+  color: var(--gray-500);
+}
+
 .matrixblock.trinity-spacing-inactive > .trinity-spacing .trinity-spacing__options {
-  opacity: 0.4;
+  display: none;
 }
 
-.trinity-spacing__option:disabled {
-  cursor: not-allowed;
-}
-
-.trinity-spacing__option:disabled:hover {
-  background: transparent;
+.matrixblock.trinity-spacing-inactive > .trinity-spacing .trinity-spacing__reason {
+  display: inline;
 }
 
 /* The gap between rows hints at the choice */

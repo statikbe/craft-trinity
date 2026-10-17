@@ -86,7 +86,7 @@ return [
 | `cellsField` | `'gridCells'` | Handle of the cells Matrix |
 | `mobileOrderField` | `'mobileOrder'` | Handle of the mobile order Dropdown on every cell type |
 | `rowSpacingField` | `null` | Handle of a Button Group on the row entry type for the space above a row; shown as a compact control between rows (see [Space above a row](#space-above-a-row)) |
-| `rowBackgroundField` | `null` | Handle of the row's background field; the spacing control is disabled on a row whose background differs from the row above |
+| `rowBackgroundField` | `null` | Handle of the row's background field; on a row whose background differs from the row above, the spacing control shows why it isn't available instead of its options |
 | `rowBackgroundDefault` | `''` | The background of a row whose background field is empty or hidden by its condition |
 | `cellTypePrefix` | `'cell'` | Prefix stripped from cell type handles to get their type (`cellText` → `text`) |
 | `minColumnWidth` | `1 / 4` | Narrowest a column may be on the page; layouts with narrower columns aren't allowed (1/3 columns on a 2/3 page) |
@@ -241,8 +241,9 @@ The control panel then hides the field and shows its options as a small *Space a
 the first one in the content builder, and the gap between the blocks follows the choice (`close` and `extra`) as a hint.
 Clicking an option sets the field, so drafts, autosave and revisions work as for any field.
 
-Spacing usually only applies between rows with the same background. Name the background field too, and the control is disabled
-(dimmed, with a tooltip) on a row whose background differs from the row above; it follows background changes and moved rows live:
+Spacing usually only applies between rows with the same background. Name the background field too, and on a row whose
+background differs from the row above the control shows *Space above: Not available: the row above has another background*
+instead of its options. It follows background changes and moved rows live:
 
 ```php
 'rowBackgroundField' => 'backgroundColor',

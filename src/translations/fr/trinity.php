@@ -27,7 +27,7 @@ return [
     'Merge with left' => 'Fusionner avec la gauche',
     'Merge with right' => 'Fusionner avec la droite',
     'Not with {type}' => 'Pas avec {type}',
-    'Another background than the row above: the spacing doesn’t apply' => 'Autre arrière-plan que la rangée au-dessus : l’espace ne s’applique pas',
+    'Not available: the row above has another background' => 'Non disponible : la rangée au-dessus a un autre arrière-plan',
     'Only between rows with the same background' => 'Uniquement entre des rangées avec le même arrière-plan',
     'Space above' => 'Espace au-dessus',
     'not with {type}' => 'pas avec {type}',
