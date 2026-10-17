@@ -18,6 +18,7 @@ use statikbe\trinity\layout\Layout;
 use statikbe\trinity\models\Settings;
 use statikbe\trinity\Trinity;
 use yii\base\InvalidArgumentException;
+use yii\base\InvalidConfigException;
 
 /**
  * Rows in a content builder: a row entry with a layout (1–3 columns) and one cell entry per column, from left to right.
@@ -85,7 +86,7 @@ class Rows extends Component
     public function row(Entry $row): array
     {
         $layouts = $this->getLayouts();
-        $pageWidth = $this->pageWidth($row->getOwner());
+        $pageWidth = $this->rowPageWidth($row);
         $layout = $this->layout($row);
         $cells = $row->getFieldValue($this->getSettings()->cellsField)->eagerly()->all();
         $fractions = $layouts->fractions($layout);
@@ -146,22 +147,37 @@ class Rows extends Component
     }
 
     /**
-     * Width of the content builder on this page (the element owning the row), as a fraction of the page: 1, or e.g. 2/3 next
-     * to a sidebar (config/trinity.php → pageWidths, or EVENT_DEFINE_PAGE_WIDTH).
+     * Width of a content builder on this page (the element owning the rows), as a fraction of the page: 1, or e.g. 2/3 next
+     * to a sidebar (config/trinity.php → pageWidths, or EVENT_DEFINE_PAGE_WIDTH). Pass the handle of the builder's Matrix field
+     * (as in the page's field layout) for a page with more than one content builder.
      */
-    public function pageWidth(?ElementInterface $page): float
+    public function pageWidth(?ElementInterface $page, ?string $field = null): float
     {
         if (!$page instanceof Entry) {
             return 1;
         }
         $event = new DefinePageWidthEvent([
             'page' => $page,
-            'width' => $this->getLayouts()->configuredPageWidth($page->getType()->handle, $page->getSection()?->handle),
+            'field' => $field,
+            'width' => $this->getLayouts()->configuredPageWidth($page->getType()->handle, $page->getSection()?->handle, $field),
         ]);
         if ($this->hasEventHandlers(self::EVENT_DEFINE_PAGE_WIDTH)) {
             $this->trigger(self::EVENT_DEFINE_PAGE_WIDTH, $event);
         }
         return $event->width;
+    }
+
+    /**
+     * Width of the content builder a row is in: the width of its page, for the Matrix field the row belongs to.
+     */
+    public function rowPageWidth(Entry $row): float
+    {
+        try {
+            $field = $row->getField()?->handle;
+        } catch (InvalidConfigException) {
+            $field = null;
+        }
+        return $this->pageWidth($row->getOwner(), $field);
     }
 
     /**
@@ -225,7 +241,7 @@ class Rows extends Component
             if ($index !== null) {
                 // Cells beyond the layout's columns render as full rows (see row())
                 $fraction = $this->getLayouts()->fractions($this->layout($row))[$index] ?? 1;
-                $column = ['fraction' => $fraction, 'width' => $fraction * $this->pageWidth($row->getOwner())];
+                $column = ['fraction' => $fraction, 'width' => $fraction * $this->rowPageWidth($row)];
             }
         }
 
@@ -242,7 +258,7 @@ class Rows extends Component
     public function cpConfig(?ElementInterface $row): array
     {
         $layouts = $this->getLayouts();
-        $pageWidth = $row instanceof Entry ? $this->pageWidth($row->getOwner()) : 1;
+        $pageWidth = $row instanceof Entry ? $this->rowPageWidth($row) : 1;
         $minWidthPerType = [];
         $maxWidthPerType = [];
         $blockedCombinations = [];
@@ -262,7 +278,10 @@ class Rows extends Component
             'handles' => [
                 'layoutField' => $settings->layoutField,
                 'cellsField' => $settings->cellsField,
+                'rowSpacingField' => $settings->rowSpacingField,
+                'rowBackgroundField' => $settings->rowBackgroundField,
             ],
+            'rowBackgroundDefault' => $settings->rowBackgroundDefault,
             'layouts' => Layout::LAYOUTS,
             'allowedLayouts' => $layouts->allowedLayouts($pageWidth),
             'contextWidth' => $pageWidth,
@@ -313,7 +332,7 @@ class Rows extends Component
 
         $settings = $this->getSettings();
         $layouts = $this->getLayouts();
-        $pageWidth = $this->pageWidth($row->getOwner());
+        $pageWidth = $this->rowPageWidth($row);
         $layout = $this->layout($row);
 
         if (!in_array($layout, $layouts->allowedLayouts($pageWidth), true)) {

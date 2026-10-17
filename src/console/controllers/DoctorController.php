@@ -6,6 +6,7 @@ use Craft;
 use craft\base\conditions\ConditionRuleInterface;
 use craft\console\Controller;
 use craft\fields\BaseOptionsField;
+use craft\fields\ButtonGroup;
 use craft\fields\Matrix;
 use craft\helpers\Console;
 use statikbe\trinity\layout\Layout;
@@ -43,6 +44,17 @@ class DoctorController extends Controller
             foreach (['layoutField', 'cellsField'] as $setting) {
                 if (!$rowType->getFieldLayout()->getFieldByHandle($settings->$setting)) {
                     $this->addError("The row entry type \"{$rowType->handle}\" has no \"{$settings->$setting}\" field ({$setting}).");
+                }
+            }
+            if ($settings->rowBackgroundField !== null && !$rowType->getFieldLayout()->getFieldByHandle($settings->rowBackgroundField)) {
+                $this->addError("The row entry type \"{$rowType->handle}\" has no \"{$settings->rowBackgroundField}\" field (rowBackgroundField).");
+            }
+            if ($settings->rowSpacingField !== null) {
+                $spacingField = $rowType->getFieldLayout()->getFieldByHandle($settings->rowSpacingField);
+                if (!$spacingField) {
+                    $this->addError("The row entry type \"{$rowType->handle}\" has no \"{$settings->rowSpacingField}\" field (rowSpacingField).");
+                } elseif (!$spacingField instanceof ButtonGroup) {
+                    $this->addWarning("rowSpacingField \"{$settings->rowSpacingField}\" isn't a Button Group: the control panel shows it as a normal field.");
                 }
             }
         }
@@ -114,6 +126,22 @@ class DoctorController extends Controller
         foreach ($config->pageWidths['sections'] as $handle => $width) {
             if (!Craft::$app->getEntries()->getSectionByHandle($handle)) {
                 $this->addWarning("pageWidths.sections: section \"{$handle}\" doesn't exist.");
+            }
+        }
+        if ($config->pageWidths['fields']) {
+            // The handles as used in field layouts: Matrix fields that offer the row entry type
+            $builders = [];
+            foreach ($fields->getAllLayouts() as $fieldLayout) {
+                foreach ($fieldLayout->getCustomFields() as $field) {
+                    if ($field instanceof Matrix && in_array($settings->rowEntryType, array_map(fn($type) => $type->handle, $field->getEntryTypes()), true)) {
+                        $builders[$field->handle] = true;
+                    }
+                }
+            }
+            foreach ($config->pageWidths['fields'] as $handle => $width) {
+                if (!isset($builders[$handle])) {
+                    $this->addWarning("pageWidths.fields: \"{$handle}\" is not a Matrix field with \"{$settings->rowEntryType}\" rows in any field layout.");
+                }
             }
         }
 

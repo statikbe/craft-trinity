@@ -1,5 +1,18 @@
 # Release Notes for Trinity
 
+## 1.1.0 - 2026-10-17
+
+### Added
+- `pageWidths.fields`: the width of a content builder by the handle of its Matrix field (as in the field layout), for entries with more than one content builder (Craft allows a Matrix field only once per field layout, so a second builder is a second Matrix field with the same row entry type). A field wins over an entry type and section
+- `Rows::rowPageWidth()`; `craft.trinity.pageWidth()` and `Rows::pageWidth()` take the builder's field handle as an optional second argument; `DefinePageWidthEvent::$field`
+- `craft trinity/doctor` warns about a `pageWidths.fields` handle that isn't a Matrix field with rows in any field layout
+
+- `rowSpacingField`: a Button Group on the row entry type for the space above a row. The control panel hides it and shows its options as a compact "Space above" control at the top of every row but the first; the gap between the blocks follows the choice (`close`, `extra`). What the values mean is up to the templates. `craft trinity/doctor` checks the field
+- `rowBackgroundField` and `rowBackgroundDefault`: with these, the spacing control is disabled on a row whose background differs from the row above (live, also when a background changes or rows move)
+
+### Changed
+- The "Add content" menu of an empty column shows the entry type groups of the cells field, with a heading per group, like Craft's own "New entry" menu (only when there's more than one group)
+
 ## 1.0.1 - 2026-10-16
 
 ### Fixed

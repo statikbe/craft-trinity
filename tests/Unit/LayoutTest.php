@@ -160,6 +160,14 @@ describe('page widths', function() {
     it('lists every width once, widest first, including extra ones', function() use ($config) {
         expect(layout($config)->pageWidths([0.75, 1 / 2]))->toEqualWithDelta([1, 0.75, 2 / 3, 0.5], 0.0001);
     });
+
+    it('prefers the builder field over the entry type and section', function() use ($config) {
+        $config['pageWidths']['fields'] = ['sidebarBuilder' => 1 / 3];
+        expect(layout($config)->configuredPageWidth('pageWithSidebar', 'news', 'sidebarBuilder'))->toEqualWithDelta(1 / 3, 0.0001)
+            ->and(layout($config)->configuredPageWidth('pageWithSidebar', 'news', 'contentBuilder'))->toEqualWithDelta(2 / 3, 0.0001)
+            ->and(layout($config)->configuredPageWidth('article', 'pages', 'contentBuilder'))->toBe(1.0)
+            ->and(layout($config)->pageWidths())->toEqualWithDelta([1, 0.75, 2 / 3, 1 / 3], 0.0001);
+    });
 });
 
 describe('formatWidth', function() {

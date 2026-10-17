@@ -11,7 +11,7 @@ use statikbe\trinity\models\Settings;
 final class LayoutConfig
 {
     /**
-     * @param array{entryTypes: array<string, float>, sections: array<string, float>} $pageWidths
+     * @param array{entryTypes: array<string, float>, sections: array<string, float>, fields: array<string, float>} $pageWidths
      * @param array<string, float> $minWidthPerType
      * @param array<string, float> $maxWidthPerType
      * @param array<array{string, string}> $blockedCombinations
@@ -21,7 +21,7 @@ final class LayoutConfig
      */
     public function __construct(
         public readonly float $minColumnWidth = 1 / 4,
-        public readonly array $pageWidths = ['entryTypes' => [], 'sections' => []],
+        public readonly array $pageWidths = ['entryTypes' => [], 'sections' => [], 'fields' => []],
         public readonly int $narrowFromViewport = 980,
         public readonly array $minWidthPerType = [],
         public readonly array $maxWidthPerType = [],
@@ -61,7 +61,7 @@ final class LayoutConfig
         $minColumnWidth = (float)($config['minColumnWidth'] ?? $defaults->minColumnWidth);
         $warnings = [];
 
-        $pageWidths = ['entryTypes' => [], 'sections' => []];
+        $pageWidths = ['entryTypes' => [], 'sections' => [], 'fields' => []];
         foreach (array_keys($pageWidths) as $key) {
             foreach ((array)($config['pageWidths'][$key] ?? []) as $handle => $width) {
                 if (is_numeric($width) && $width >= $minColumnWidth && $width <= 1) {

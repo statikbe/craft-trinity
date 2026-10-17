@@ -24,6 +24,22 @@ class Settings extends Model
     /** Handle of the dropdown on every cell type: the column's position while the columns are stacked ('' = auto, '1'–'3') */
     public string $mobileOrderField = 'mobileOrder';
 
+    /**
+     * Handle of a Button Group on the row entry type for the space above a row (e.g. auto / close / normal / extra), or null.
+     * The control panel then shows its options as a compact control at the top of every row but the first, instead of the
+     * field. What the options mean is up to the templates.
+     */
+    public ?string $rowSpacingField = null;
+
+    /**
+     * Handle of the row's background field, or null. With rowSpacingField, the control panel disables the spacing control of a
+     * row whose background differs from the row above (each keeps its own padding then).
+     */
+    public ?string $rowBackgroundField = null;
+
+    /** The background a row has when rowBackgroundField is empty or hidden by its condition, e.g. 'section--default' */
+    public string $rowBackgroundDefault = '';
+
     /** Prefix of the cell entry type handles, stripped to get the cell's type (cellText → text) */
     public string $cellTypePrefix = 'cell';
 
@@ -31,14 +47,16 @@ class Settings extends Model
     public float $minColumnWidth = 1 / 4;
 
     /**
-     * Pages where the content builder is narrower than the page (e.g. next to a sidebar): its width as a fraction of the page,
-     * by entry type or section handle; an entry type wins over its section.
+     * Content builders that are narrower than the page (e.g. next to a sidebar): their width as a fraction of the page,
+     * by entry type or section handle, or by the handle of the builder's Matrix field (as in the field layout) for an entry
+     * with more than one content builder. A field wins over an entry type, an entry type over its section.
      *
-     * @var array{entryTypes?: array<string, float>, sections?: array<string, float>}
+     * @var array{entryTypes?: array<string, float>, sections?: array<string, float>, fields?: array<string, float>}
      */
     public array $pageWidths = [
         'entryTypes' => [],
         'sections' => [],
+        'fields' => [],
     ];
 
     /** From which viewport width those narrower pages show the content builder at that width (full width below it) */

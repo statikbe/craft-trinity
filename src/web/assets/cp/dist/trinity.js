@@ -11,6 +11,9 @@
  *  - a card dragged (by its move handle) onto an empty column of another row moves there: Craft can't move a nested
  *    entry to another owner, so it is duplicated into that row (like Copy + Paste) and then deleted here.
  * Empty columns only exist here: saving a row with fewer blocks than columns fails validation (Rows::validateRow()).
+ *  - with rowSpacingField set, that Button Group is hidden and its options are shown as a compact "Space above" control at the
+ *    top of every row in the content builder but the first; the block's gap follows the choice (close / extra) as a hint. With
+ *    rowBackgroundField, the control is disabled on a row whose background differs from the row above.
  * Settings and field handles come from Rows::cpConfig(), in a [data-trinity] element in the cells field.
  * When Craft's CP changes and this breaks, the native fields keep working without it.
  */
@@ -107,6 +110,7 @@
             this.placeholders = {};
 
             this.hideDisallowedLayouts();
+            this.initSpacing();
 
             this.$addLeft = this.addColumnButton('left');
             this.$addRight = this.addColumnButton('right');
@@ -144,6 +148,48 @@
 
         isAllowed(layout) {
             return this.config.allowedLayouts.includes(layout);
+        },
+
+        // Space above the row
+        // ---------------------------------------------------------------------
+
+        /** The rowSpacingField Button Group as a compact control at the top of the row's block (only for rows in a content builder) */
+        initSpacing() {
+            const handle = this.config.handles.rowSpacingField;
+            if (!handle || !this.$row.hasClass('matrixblock')) {
+                return;
+            }
+            const $field = this.$row.find(`[data-attribute="${handle}"]`).first();
+            const listbox = $field.find('.btngroup').first().data('listbox');
+            if (!listbox || this.$row.children('.trinity-spacing').length) {
+                return;
+            }
+
+            const $bar = $('<div/>', {
+                class: 'trinity-spacing',
+                title: Craft.t('trinity', 'Only between rows with the same background'),
+            }).prependTo(this.$row);
+            $('<span/>', {class: 'trinity-spacing__label', text: Craft.t('trinity', 'Space above')}).appendTo($bar);
+            const $group = $('<div/>', {class: 'trinity-spacing__options', role: 'group', 'aria-label': Craft.t('trinity', 'Space above')}).appendTo($bar);
+            const buttons = listbox.$options.toArray().map((option, index) => {
+                const $button = $('<button/>', {type: 'button', class: 'trinity-spacing__option'})
+                    .append($(option).children().clone())
+                    .appendTo($group);
+                $button.attr('aria-label', $(option).text().trim());
+                this.addListener($button, 'click', () => listbox.select(index));
+                return $button;
+            });
+            $field.addClass('hidden');
+
+            const update = () => {
+                const selected = listbox.$options.index(listbox.$selectedOption);
+                buttons.forEach(($button, index) => $button.toggleClass('active', index === selected).attr('aria-pressed', index === selected ? 'true' : 'false'));
+                const value = (listbox.$selectedOption?.data('value') ?? '').toString();
+                this.$row.attr('data-trinity-spacing', value.startsWith('base64:') ? atob(value.substring(7)) : value);
+            };
+            listbox.on('change', update);
+            update();
+            watchBuilder(this.$row[0].parentElement, this.config);
         },
 
         /** Layouts that can't be used here are hidden; the selected one stays visible (marked) so it can be changed */
@@ -453,27 +499,43 @@
             $('<div/>', {id: menuId, class: 'menu menu--disclosure'}).insertAfter($addBtn);
             $addBtn.attr({'aria-controls': menuId, 'data-disclosure-trigger': 'true'}).addClass('menubtn').disclosureMenu();
             const menu = $addBtn.data('disclosureMenu');
-            // Every type that fits a column on this page is listed; the ones that can't be added here are disabled, with the reason (see updateMenu())
+            // Every type that fits a column on this page is listed; the ones that can't be added here are disabled, with the reason (see updateMenu()).
+            // Grouped by the entry type groups of the cells field, with a heading per group when there's more than one (as Craft's own menu)
             const items = [];
+            const groups = new Map();
             for (const attributes of this.nem.settings.createAttributes ?? []) {
                 if (!this.fitsPage(attributes.attributes.typeId)) {
                     continue;
                 }
-                const button = menu.addItem({
-                    icon: attributes.icon ? $(attributes.icon)[0] : null,
-                    label: attributes.label,
-                    iconColor: attributes.color,
-                    onActivate: async () => {
-                        if (button.classList.contains('disabled')) {
-                            return;
-                        }
-                        this.pendingSlot = slot;
-                        $addBtn.addClass('loading');
-                        await this.nem.createElement(attributes.attributes);
-                        $addBtn.removeClass('loading');
-                    },
-                });
-                items.push({button, typeId: attributes.attributes.typeId});
+                const group = attributes.group || Craft.t('app', 'General');
+                if (!groups.has(group)) {
+                    groups.set(group, []);
+                }
+                groups.get(group).push(attributes);
+            }
+            const showGroups = groups.size > 1;
+            for (const [group, groupAttributes] of groups) {
+                if (showGroups) {
+                    menu.addHr();
+                    menu.addGroup(group, false);
+                }
+                for (const attributes of groupAttributes) {
+                    const button = menu.addItem({
+                        icon: attributes.icon ? $(attributes.icon)[0] : null,
+                        label: attributes.label,
+                        iconColor: attributes.color,
+                        onActivate: async () => {
+                            if (button.classList.contains('disabled')) {
+                                return;
+                            }
+                            this.pendingSlot = slot;
+                            $addBtn.addClass('loading');
+                            await this.nem.createElement(attributes.attributes);
+                            $addBtn.removeClass('loading');
+                        },
+                    });
+                    items.push({button, typeId: attributes.attributes.typeId});
+                }
             }
 
             if (columns > 1) {
@@ -712,6 +774,62 @@
             this.base();
         },
     });
+
+    /**
+     * The "Space above" controls of a content builder: the first row has nothing above it (control hidden), and a row whose
+     * background differs from the row above keeps its own padding (control disabled). Kept up to date when rows move, a
+     * background changes or a condition re-renders a row.
+     */
+    const watchedBuilders = new WeakMap();
+
+    /** A row's background: the checked/selected value of rowBackgroundField, or the default when it's empty or hidden */
+    const rowBackground = (block, config) => {
+        const inputs = [...block.querySelectorAll(`[name$="[fields][${config.handles.rowBackgroundField}]"]`)];
+        const input = inputs.find((input) => !['radio', 'checkbox'].includes(input.type) || input.checked);
+        return input?.value || config.rowBackgroundDefault || '';
+    };
+
+    const updateBuilder = (container) => {
+        const config = watchedBuilders.get(container)?.config;
+        if (!config) {
+            return;
+        }
+        let previous = null;
+        container.querySelectorAll(':scope > .matrixblock').forEach((block, index) => {
+            block.classList.toggle('trinity-first-row', index === 0);
+            const background = config.handles.rowBackgroundField ? rowBackground(block, config) : null;
+            const inactive = index > 0 && background !== previous;
+            previous = background;
+            const bar = block.querySelector(':scope > .trinity-spacing');
+            if (!bar) {
+                return;
+            }
+            block.classList.toggle('trinity-spacing-inactive', inactive);
+            bar.title = inactive
+                ? Craft.t('trinity', 'Another background than the row above: the spacing doesn’t apply')
+                : Craft.t('trinity', 'Only between rows with the same background');
+            bar.querySelectorAll('.trinity-spacing__option').forEach((button) => {
+                button.disabled = inactive;
+            });
+        });
+    };
+
+    const watchBuilder = (container, config) => {
+        if (!container || watchedBuilders.has(container)) {
+            return;
+        }
+        const state = {config, frame: null};
+        watchedBuilders.set(container, state);
+        const schedule = () => {
+            cancelAnimationFrame(state.frame);
+            state.frame = requestAnimationFrame(() => updateBuilder(container));
+        };
+        // Rows added, moved or removed, and rows re-rendered by a condition refresh
+        new MutationObserver(schedule).observe(container, {childList: true, subtree: true});
+        // A background chosen in a row
+        container.addEventListener('change', schedule);
+        updateBuilder(container);
+    };
 
     /** The row a field belongs to: its block in the content builder, or the form when the row is edited on its own (e.g. in a slideout) */
     const rowOf = (element) => $(element).closest('.matrixblock')[0] ?? $(element).closest('form')[0] ?? null;

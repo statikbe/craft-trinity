@@ -206,12 +206,13 @@ final class Layout
     }
 
     /**
-     * Width of the content builder on a page with this entry type and section, as a fraction of the page:
-     * the entry type's configured width, else the section's, else full.
+     * Width of a content builder on a page with this entry type and section, in the Matrix field with this handle, as a
+     * fraction of the page: the field's configured width, else the entry type's, else the section's, else full.
      */
-    public function configuredPageWidth(string $entryTypeHandle, ?string $sectionHandle = null): float
+    public function configuredPageWidth(string $entryTypeHandle, ?string $sectionHandle = null, ?string $fieldHandle = null): float
     {
-        return $this->config->pageWidths['entryTypes'][$entryTypeHandle]
+        return $this->config->pageWidths['fields'][$fieldHandle ?? '']
+            ?? $this->config->pageWidths['entryTypes'][$entryTypeHandle]
             ?? $this->config->pageWidths['sections'][$sectionHandle ?? '']
             ?? 1.0;
     }
@@ -224,7 +225,7 @@ final class Layout
      */
     public function pageWidths(array $extra = []): array
     {
-        $widths = [1.0, ...array_values($this->config->pageWidths['entryTypes']), ...array_values($this->config->pageWidths['sections']), ...$extra];
+        $widths = [1.0, ...array_values($this->config->pageWidths['entryTypes']), ...array_values($this->config->pageWidths['sections']), ...array_values($this->config->pageWidths['fields']), ...$extra];
         $unique = [];
         foreach ($widths as $width) {
             $unique[$this->formatWidth($width)] = (float)$width;

@@ -64,10 +64,11 @@ Create `config/trinity.php`. Every setting is optional. Widths are fractions of 
 
 return [
     '*' => [
-        // Pages where the content builder is narrower than the page (e.g. next to a sidebar), by entry type or section handle
+        // Content builders that are narrower than the page (e.g. next to a sidebar), by entry type, section or builder field
         'pageWidths' => [
             'entryTypes' => ['pageWithSidebar' => 2 / 3],
             'sections' => [],
+            'fields' => ['sidebarBuilder' => 1 / 3],
         ],
         // Cell types that need at least / can be at most this width of the page
         'minWidthPerType' => ['cellTable' => 1 / 2],
@@ -84,9 +85,12 @@ return [
 | `layoutField` | `'gridLayout'` | Handle of the layout Button Group |
 | `cellsField` | `'gridCells'` | Handle of the cells Matrix |
 | `mobileOrderField` | `'mobileOrder'` | Handle of the mobile order Dropdown on every cell type |
+| `rowSpacingField` | `null` | Handle of a Button Group on the row entry type for the space above a row; shown as a compact control between rows (see [Space above a row](#space-above-a-row)) |
+| `rowBackgroundField` | `null` | Handle of the row's background field; the spacing control is disabled on a row whose background differs from the row above |
+| `rowBackgroundDefault` | `''` | The background of a row whose background field is empty or hidden by its condition |
 | `cellTypePrefix` | `'cell'` | Prefix stripped from cell type handles to get their type (`cellText` → `text`) |
 | `minColumnWidth` | `1 / 4` | Narrowest a column may be on the page; layouts with narrower columns aren't allowed (1/3 columns on a 2/3 page) |
-| `pageWidths` | none | `entryTypes` / `sections` => `[handle => width]`: pages where the content builder is narrower than the page. An entry type wins over its section. |
+| `pageWidths` | none | `entryTypes` / `sections` / `fields` => `[handle => width]`: content builders that are narrower than the page. `fields` is the handle of a builder's Matrix field (as in the field layout), for pages with more than one content builder. A field wins over an entry type, an entry type over its section. |
 | `narrowFromViewport` | `980` | Viewport width (px) from which those pages show the builder at that width; full width below it (for image sizes) |
 | `minWidthPerType` | cards, table, FAQ, embed, form: `1 / 2` | Cell type handle => minimum width on the page. Your list replaces the default one. |
 | `maxWidthPerType` | none | Cell type handle => maximum width on the page. A type with a maximum below full can't fill a row on its own. |
@@ -109,6 +113,25 @@ Every column on a page with a narrower content builder is that much narrower, an
 | 2/3 | `full`, `halves` | 2/3, 1/3 |
 
 A row must sit directly in the page's content builder: its owner is the page.
+
+### More than one content builder on a page
+
+Craft allows a Matrix field only once per field layout. For a second content builder on the same entry (e.g. a sidebar), create
+another Matrix field that offers the same row entry type. Trinity recognises rows by their entry type, so the second builder
+gets the same validation, conditions and control panel layer without further setup.
+
+Give it its own width with `pageWidths.fields`, keyed by the field's handle in the field layout:
+
+```php
+'pageWidths' => [
+    'fields' => ['sidebarBuilder' => 1 / 3],
+],
+```
+
+Its rows then get the layouts, width rules and image sizes of a 1/3 builder, while the main builder keeps its own width. In
+templates, `craft.trinity.row(row)` picks this up from the row; for the page width itself pass the field:
+`craft.trinity.pageWidth(entry, 'sidebarBuilder')`. `craft trinity/doctor` warns about a handle that isn't a Matrix field with
+rows.
 
 ## Templates
 
@@ -148,7 +171,7 @@ condition: a hidden field keeps its last value.
 |---|---|
 | `craft.trinity.row(row)` | The row data above |
 | `craft.trinity.showsField(element, handle)` | Whether a field is shown for this element, following its field condition |
-| `craft.trinity.pageWidth(page)` | Width of the content builder on this page |
+| `craft.trinity.pageWidth(page, field)` | Width of a content builder on this page; `field` (optional) is the builder's Matrix field handle |
 | `craft.trinity.imageSizes(layout, fraction, pageWidth)` | `sizes` and `srcsetSizes` for an image filling such a column |
 | `craft.trinity.settings` | The settings |
 
@@ -187,13 +210,15 @@ outside a row has no column: *is not one of* matches it. Their values are stored
 On the cells field, Trinity:
 
 - lays out the cell cards like the row's columns, each with its width on the page;
-- shows empty columns, with an *Add content* menu that lists the types that fit (others disabled, with the reason) and
-  buttons to merge an empty column with the one next to it;
+- shows empty columns, with an *Add content* menu that lists the types that fit (others disabled, with the reason),
+  grouped under headings like the entry type groups of the cells field (when it has more than one group), and buttons to merge
+  an empty column with the one next to it;
 - adds a column on the left or right (up to 3, as far as the page allows);
 - hides the layouts that can't be used on the page;
 - moves a cell dragged onto an empty column of another row (it's duplicated there and deleted here, in the page's draft, so
   discarding the draft undoes it);
-- puts the row's errors back on its fields after a failed save.
+- puts the row's errors back on its fields after a failed save;
+- with `rowSpacingField`, shows a compact *Space above* control at the top of every row but the first (see below).
 
 Empty columns only exist in the control panel: saving a row with fewer cells than columns fails validation. The layer is made
 for a content builder Matrix in **blocks** view (inline-editable blocks).
@@ -201,6 +226,32 @@ for a content builder Matrix in **blocks** view (inline-editable blocks).
 ![An empty column with the Add content menu, listing the cell types](docs/images/add-content.png)
 
 ![A row with three columns: two empty ones with Add content and Merge with left, and types that need a wider column disabled with their minimum width](docs/images/empty-columns.png)
+
+### Space above a row
+
+Rows that follow each other often belong together (a title row and its follow-up) or start a new part of the page. To let
+editors set that, add a **Button Group** to the row entry type, e.g. `rowSpacing` with the options `auto`, `close`, `normal`
+and `extra` (icons help), and name it in the settings:
+
+```php
+'rowSpacingField' => 'rowSpacing',
+```
+
+The control panel then hides the field and shows its options as a small *Space above* control at the top of every row except
+the first one in the content builder, and the gap between the blocks follows the choice (`close` and `extra`) as a hint.
+Clicking an option sets the field, so drafts, autosave and revisions work as for any field.
+
+Spacing usually only applies between rows with the same background. Name the background field too, and the control is disabled
+(dimmed, with a tooltip) on a row whose background differs from the row above; it follows background changes and moved rows live:
+
+```php
+'rowBackgroundField' => 'backgroundColor',
+'rowBackgroundDefault' => 'section--default', // the background when the field is empty or hidden
+```
+ What the values do on the front
+end is up to your templates and CSS: e.g. a `data-row-spacing` attribute on the row's section when it has the same background as
+the row above, with `auto` decided from the content (a row without a title follows the one above). `craft trinity/doctor`
+checks that the field is on the row entry type.
 
 ## Validation
 
@@ -219,9 +270,9 @@ use statikbe\trinity\events\RegisterPageWidthsEvent;
 use statikbe\trinity\services\Rows;
 use yii\base\Event;
 
-// The width of the content builder on a page, for pages pageWidths can't describe
+// The width of a content builder on a page, for pages pageWidths can't describe ($event->field: the builder's field handle)
 Event::on(Rows::class, Rows::EVENT_DEFINE_PAGE_WIDTH, function(DefinePageWidthEvent $event) {
-    if ($event->page->slug === 'narrow-page') {
+    if ($event->page->slug === 'narrow-page' && $event->field !== 'sidebarBuilder') {
         $event->width = 3 / 4;
     }
 });

@@ -28,6 +28,12 @@ it('skips page widths outside minColumnWidth to 1 with a warning', function() {
         ->and($config->warnings)->toHaveCount(3);
 });
 
+it('reads field widths and skips invalid ones with a warning', function() {
+    $config = LayoutConfig::fromArray(['pageWidths' => ['fields' => ['sidebarBuilder' => 1 / 3, 'tiny' => 1 / 8]]]);
+    expect($config->pageWidths['fields'])->toEqualWithDelta(['sidebarBuilder' => 1 / 3], 0.0001)
+        ->and($config->warnings)->toHaveCount(1);
+});
+
 it('sorts containers by viewport width', function() {
     expect(array_keys(LayoutConfig::fromArray(['containers' => [1200 => 1168, 480 => 448]])->containers))->toBe([480, 1200]);
 });

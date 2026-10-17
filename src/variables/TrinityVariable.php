@@ -31,11 +31,12 @@ class TrinityVariable
     }
 
     /**
-     * Width of the content builder on this page as a fraction of the page: 1, or e.g. 2/3 next to a sidebar.
+     * Width of a content builder on this page as a fraction of the page: 1, or e.g. 2/3 next to a sidebar. Pass the builder's
+     * field handle on a page with more than one content builder.
      */
-    public function pageWidth(?ElementInterface $page): float
+    public function pageWidth(?ElementInterface $page, ?string $field = null): float
     {
-        return Trinity::getInstance()->getRows()->pageWidth($page);
+        return Trinity::getInstance()->getRows()->pageWidth($page, $field);
     }
 
     /**
