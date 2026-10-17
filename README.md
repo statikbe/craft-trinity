@@ -86,6 +86,7 @@ return [
 | `cellsField` | `'gridCells'` | Handle of the cells Matrix |
 | `mobileOrderField` | `'mobileOrder'` | Handle of the mobile order Dropdown on every cell type |
 | `rowSpacingField` | `null` | Handle of a Button Group on the row entry type for the space above a row; shown as a compact control between rows (see [Space above a row](#space-above-a-row)) |
+| `autoRowSpacing` | `true` | For your templates: whether *auto* spacing is decided from the content (`true`) or is normal spacing (`false`); also without `rowSpacingField` (see [Space above a row](#space-above-a-row)) |
 | `rowBackgroundField` | `null` | Handle of the row's background field; on a row whose background differs from the row above, the spacing control shows why it isn't available instead of its options |
 | `rowBackgroundDefault` | `''` | The background of a row whose background field is empty or hidden by its condition |
 | `cellTypePrefix` | `'cell'` | Prefix stripped from cell type handles to get their type (`cellText` → `text`) |
@@ -253,6 +254,15 @@ instead of its options. It follows background changes and moved rows live:
 end is up to your templates and CSS: e.g. a `data-row-spacing` attribute on the row's section when it has the same background as
 the row above, with `auto` decided from the content (a row without a title follows the one above). `craft trinity/doctor`
 checks that the field is on the row entry type.
+
+`autoRowSpacing` (default `true`) lets a project switch that content rule off without touching templates: read it as
+`craft.trinity.settings.autoRowSpacing` and treat `auto` as normal spacing when it's `false`. To switch spacing off altogether,
+set both:
+
+```php
+'rowSpacingField' => null,   // no Space above control (remove the field from the row entry type too)
+'autoRowSpacing' => false,   // auto = normal spacing
+```
 
 ## Validation
 

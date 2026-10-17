@@ -32,6 +32,13 @@ class Settings extends Model
     public ?string $rowSpacingField = null;
 
     /**
+     * Whether templates decide "auto" spacing from the content (e.g. close for a row without a title, a follow-up of the row
+     * above), or treat it as normal spacing. Trinity only passes it on (craft.trinity.settings.autoRowSpacing); it also applies
+     * without rowSpacingField, when every row is auto.
+     */
+    public bool $autoRowSpacing = true;
+
+    /**
      * Handle of the row's background field, or null. With rowSpacingField, the control panel disables the spacing control of a
      * row whose background differs from the row above (each keeps its own padding then).
      */

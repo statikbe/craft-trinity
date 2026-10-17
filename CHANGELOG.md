@@ -1,5 +1,10 @@
 # Release Notes for Trinity
 
+## 1.2.0 - 2026-10-17
+
+### Added
+- `autoRowSpacing` (default `true`): whether templates decide "auto" spacing from the content or treat it as normal spacing, available as `craft.trinity.settings.autoRowSpacing`. With `rowSpacingField` set to `null` as well, a project switches row spacing off altogether
+
 ## 1.1.1 - 2026-10-17
 
 ### Changed
