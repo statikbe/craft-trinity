@@ -118,6 +118,12 @@ class Settings extends Model
     /** Narrowest column (px) at which columns still sit side by side; below that a row stacks its columns */
     public int $columnMinWidth = 256;
 
+    /**
+     * Whether rows with a 1/3 column (thirds, 1/3 + 2/3, 2/3 + 1/3) show two equal columns while they are too narrow for their
+     * layout but wide enough for halves: the third column of thirds wraps below, as a half on the left. false: they stack until their own breakpoint.
+     */
+    public bool $twoColumnStep = true;
+
     /** Image size below the first container breakpoint */
     public string $mobileSize = '95vw';
 
@@ -127,6 +133,7 @@ class Settings extends Model
             [['rowEntryType', 'layoutField', 'cellsField', 'mobileOrderField'], 'required'],
             [['minColumnWidth'], 'number', 'min' => 0, 'max' => 1],
             [['narrowFromViewport', 'columnGap', 'columnMinWidth'], 'integer', 'min' => 0],
+            [['twoColumnStep'], 'boolean'],
         ];
     }
 }

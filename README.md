@@ -100,6 +100,7 @@ return [
 | `columnGap` | `48` | Gap between columns (px), matching your CSS; also the gap between the content builder and a sidebar |
 | `columnGaps` | none | Layout value => gap (px) for layouts with another gap between their columns, e.g. `['thirds' => 24]` |
 | `columnMinWidth` | `256` | Narrowest a column gets (px) before the row stacks its columns |
+| `twoColumnStep` | `true` | Rows with a 1/3 column show two equal columns between the halves breakpoint and their own (the third column of thirds wraps below, as a half on the left); `false`: they stack until their own breakpoint |
 | `mobileSize` | `'95vw'` | Image size below the first container breakpoint |
 
 ### Widths on narrower pages
@@ -158,8 +159,9 @@ type:
 | `layout` | The layout value, e.g. `thirdTwoThirds` (`full` when none is chosen) |
 | `pageWidth` | Width of the content builder on this page, e.g. `0.6667` |
 | `breakpoint` | Row width (px) from which the columns sit side by side: their narrowest column is then `columnMinWidth` wide (560 for halves, 864 for layouts with a 1/3 column) |
+| `twoColumnBreakpoint` | Row width (px) from which a row with a 1/3 column shows two equal columns until `breakpoint` (560), or `null` (full, halves, `twoColumnStep` off) |
 | `cellTypes` | The cells' types, left to right, e.g. `['text', 'image']` |
-| `columns` | Per cell, left to right: `cell` (the entry), `type`, `fraction` (share of the row as text: `1/3`, `1/2`, `2/3` or `full`), `width` (share of the page, a number, e.g. `0.3333`), `mobileOrder` (position while stacked, or `null` when every column is on *Auto*), `sizes` and `srcsetSizes` (for an image that fills the column) |
+| `columns` | Per cell, left to right: `cell` (the entry), `type`, `fraction` (share of the row as text: `1/3`, `1/2`, `2/3` or `full`), `width` (share of the page, a number, e.g. `0.3333`), `mobileOrder` (position while stacked, or `null` when every column is on *Auto*), `sizes` and `srcsetSizes` (for an image that fills the column, also in the two-column step, where every column is a half) |
 
 Cells beyond the layout's columns (the layout was changed without removing them) come last with a `fraction` of `full`; validation
 prevents saving that.
@@ -183,6 +185,9 @@ Use container queries, not viewport breakpoints: the same row can be on a full-w
 - **Columns side by side**: from `breakpoint` (the row's width), e.g. container sizes `--container-cols-2: 560px` and
   `--container-cols-3: 864px` with `@cols-2:grid-cols-2` / `@cols-3:grid-cols-3`. Change `columnMinWidth` / `columnGap`
   together with them. A layout with its own gap in `columnGaps` has its own breakpoint (thirds with a 24px gap: 816px).
+- **Two-column step**: from `twoColumnBreakpoint`, a row with a 1/3 column shows two equal columns, e.g. `@cols-2:grid-cols-2
+  @cols-3:grid-cols-3`; the third column of thirds wraps below, as a half on the left. A 2/3 column only spans 2 from
+  `@cols-3`. Mobile order then applies below `@cols-2`.
 - **Mobile order**: below the breakpoint, give each column `order-{{ column.mobileOrder }}` when it's set. Only the visual
   order changes; the source order (screen readers, tabbing) stays left to right.
 - **Image sizes** follow `containers`, `columnGap`, `columnGaps` and `narrowFromViewport`: keep them in sync with your CSS. A mismatch only

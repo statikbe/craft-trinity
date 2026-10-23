@@ -30,6 +30,7 @@ final class LayoutConfig
         public readonly int $columnGap = 48,
         public readonly array $columnGaps = [],
         public readonly int $columnMinWidth = 256,
+        public readonly bool $twoColumnStep = true,
         public readonly string $mobileSize = '95vw',
         public readonly array $warnings = [],
     ) {
@@ -48,6 +49,7 @@ final class LayoutConfig
             'columnGap' => $settings->columnGap,
             'columnGaps' => $settings->columnGaps,
             'columnMinWidth' => $settings->columnMinWidth,
+            'twoColumnStep' => $settings->twoColumnStep,
             'mobileSize' => $settings->mobileSize,
         ]);
     }
@@ -110,6 +112,7 @@ final class LayoutConfig
             columnGap: (int)($config['columnGap'] ?? $defaults->columnGap),
             columnGaps: $columnGaps,
             columnMinWidth: (int)($config['columnMinWidth'] ?? $defaults->columnMinWidth),
+            twoColumnStep: (bool)($config['twoColumnStep'] ?? $defaults->twoColumnStep),
             mobileSize: (string)($config['mobileSize'] ?? $defaults->mobileSize),
             warnings: $warnings,
         );

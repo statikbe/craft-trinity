@@ -77,11 +77,12 @@ class Rows extends Component
 
     /**
      * Everything the templates need to render a row: its layout, the width of the content builder on the page, the breakpoint
-     * from which its columns sit side by side, and per column the cell entry, its type, its share of the row (readable: "1/3",
+     * from which its columns sit side by side (and from which a row with a 1/3 column shows two columns, see
+     * Layout::twoColumnBreakpoint()), and per column the cell entry, its type, its share of the row (readable: "1/3",
      * "1/2", "2/3", "full"), its effective width (fraction of the page), its position while stacked (see Layout::mobileOrder())
      * and responsive image sizes for an image filling the column.
      *
-     * @return array{layout: string, pageWidth: float, breakpoint: int, cellTypes: string[], columns: array<array{cell: Entry, type: string, fraction: string, width: float, mobileOrder: int|null, sizes: string, srcsetSizes: string[]}>}
+     * @return array{layout: string, pageWidth: float, breakpoint: int, twoColumnBreakpoint: int|null, cellTypes: string[], columns: array<array{cell: Entry, type: string, fraction: string, width: float, mobileOrder: int|null, sizes: string, srcsetSizes: string[]}>}
      */
     public function row(Entry $row): array
     {
@@ -112,6 +113,7 @@ class Rows extends Component
             'layout' => $layout,
             'pageWidth' => $pageWidth,
             'breakpoint' => $layouts->breakpoint($layout),
+            'twoColumnBreakpoint' => $layouts->twoColumnBreakpoint($layout),
             'cellTypes' => array_column($columns, 'type'),
             'columns' => $columns,
         ];

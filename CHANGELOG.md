@@ -1,5 +1,13 @@
 # Release Notes for Trinity
 
+## 1.3.0 - 2026-10-23
+
+### Added
+- `twoColumnStep` (default `true`): rows with a 1/3 column (thirds, 1/3 + 2/3, 2/3 + 1/3) show two equal columns while they are too narrow for their layout but wide enough for halves; the third column of thirds wraps below, as a half on the left. `Layout::twoColumnBreakpoint()`, `twoColumnBreakpoint` in `craft.trinity.row()`
+
+### Changed
+- Image sizes follow the two-column step: every column a half
+
 ## 1.2.0 - 2026-10-17
 
 ### Added

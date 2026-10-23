@@ -114,6 +114,24 @@ describe('breakpoint', function() {
     });
 });
 
+describe('twoColumnBreakpoint', function() {
+    it('is the row width at which two halves reach columnMinWidth, for layouts with a 1/3 column', function() {
+        expect(layout()->twoColumnBreakpoint('thirds'))->toBe(560)
+            ->and(layout()->twoColumnBreakpoint('thirdTwoThirds'))->toBe(560)
+            ->and(layout()->twoColumnBreakpoint('twoThirdsThird'))->toBe(560)
+            ->and(layout()->twoColumnBreakpoint('halves'))->toBeNull()
+            ->and(layout()->twoColumnBreakpoint('full'))->toBeNull();
+    });
+
+    it('follows columnGaps for a layout', function() {
+        expect(layout(['columnGaps' => ['thirds' => 24]])->twoColumnBreakpoint('thirds'))->toBe(536);
+    });
+
+    it('is off with twoColumnStep false', function() {
+        expect(layout(['twoColumnStep' => false])->twoColumnBreakpoint('thirds'))->toBeNull();
+    });
+});
+
 describe('imageSizes', function() {
     // Characterisation: sizes as rendered by the base install before the extraction (/nl/gridbuilder/ showcase pages)
     $config = ['pageWidths' => ['entryTypes' => ['pageWithSidebar' => 2 / 3]], 'narrowFromViewport' => 980];
@@ -123,20 +141,24 @@ describe('imageSizes', function() {
         expect(layout($config)->imageSizes($layout, $fraction, $pageWidth)['sizes'])->toBe($base . $expected);
     })->with([
         'halves, full page' => ['halves', 1 / 2, 1, '(min-width: 660px) and (max-width: 819px) 290px, (min-width: 820px) and (max-width: 979px) 370px, (min-width: 980px) and (max-width: 1199px) 450px, (min-width: 1200px) 560px'],
-        'thirds, full page' => ['thirds', 1 / 3, 1, '(min-width: 660px) and (max-width: 819px) 628px, (min-width: 820px) and (max-width: 979px) 788px, (min-width: 980px) and (max-width: 1199px) 284px, (min-width: 1200px) 357px'],
+        'thirds, full page' => ['thirds', 1 / 3, 1, '(min-width: 660px) and (max-width: 819px) 290px, (min-width: 820px) and (max-width: 979px) 370px, (min-width: 980px) and (max-width: 1199px) 284px, (min-width: 1200px) 357px'],
         'full, 2/3 page' => ['full', 1, 2 / 3, '(min-width: 660px) and (max-width: 819px) 628px, (min-width: 820px) and (max-width: 979px) 788px, (min-width: 980px) and (max-width: 1199px) 616px, (min-width: 1200px) 763px'],
         'halves, 2/3 page' => ['halves', 1 / 2, 2 / 3, '(min-width: 660px) and (max-width: 819px) 290px, (min-width: 820px) and (max-width: 979px) 370px, (min-width: 980px) and (max-width: 1199px) 284px, (min-width: 1200px) 358px'],
         'halves, 3/4 page' => ['halves', 1 / 2, 3 / 4, '(min-width: 660px) and (max-width: 819px) 290px, (min-width: 820px) and (max-width: 979px) 370px, (min-width: 980px) and (max-width: 1199px) 326px, (min-width: 1200px) 408px'],
-        'thirds, 3/4 page' => ['thirds', 1 / 3, 3 / 4, '(min-width: 660px) and (max-width: 819px) 628px, (min-width: 820px) and (max-width: 979px) 788px, (min-width: 980px) and (max-width: 1199px) 699px, (min-width: 1200px) 256px'],
-        'thirdTwoThirds 2/3 column, 3/4 page' => ['thirdTwoThirds', 2 / 3, 3 / 4, '(min-width: 660px) and (max-width: 819px) 628px, (min-width: 820px) and (max-width: 979px) 788px, (min-width: 980px) and (max-width: 1199px) 699px, (min-width: 1200px) 560px'],
+        'thirds, 3/4 page' => ['thirds', 1 / 3, 3 / 4, '(min-width: 660px) and (max-width: 819px) 290px, (min-width: 820px) and (max-width: 979px) 370px, (min-width: 980px) and (max-width: 1199px) 326px, (min-width: 1200px) 256px'],
+        'thirdTwoThirds 2/3 column, 3/4 page' => ['thirdTwoThirds', 2 / 3, 3 / 4, '(min-width: 660px) and (max-width: 819px) 290px, (min-width: 820px) and (max-width: 979px) 370px, (min-width: 980px) and (max-width: 1199px) 326px, (min-width: 1200px) 560px'],
     ]);
 
     it('uses the gap of the layout for its columns, and columnGap next to a sidebar', function() {
         $layout = layout(['columnGaps' => ['thirds' => 24], 'narrowFromViewport' => 980]);
-        expect($layout->imageSizes('thirds', 1 / 3)['srcsetSizes'])->toBe(['448w', '628w', '788w', '300w', '373w'])
-            ->and($layout->imageSizes('thirdTwoThirds', 1 / 3)['srcsetSizes'])->toBe(['448w', '628w', '788w', '284w', '357w'])
+        expect($layout->imageSizes('thirds', 1 / 3)['srcsetSizes'])->toBe(['448w', '302w', '382w', '300w', '373w'])
+            ->and($layout->imageSizes('thirdTwoThirds', 1 / 3)['srcsetSizes'])->toBe(['448w', '290w', '370w', '284w', '357w'])
             // 3/4 page: the builder is 3/4 × (1168 + 48) − 48 = 864 wide, its thirds 3 columns with 24px gaps
-            ->and($layout->imageSizes('thirds', 1 / 3, 3 / 4)['srcsetSizes'])->toBe(['448w', '628w', '788w', '699w', '272w']);
+            ->and($layout->imageSizes('thirds', 1 / 3, 3 / 4)['srcsetSizes'])->toBe(['448w', '302w', '382w', '338w', '272w']);
+    });
+
+    it('stacks until the layout breakpoint with twoColumnStep false', function() {
+        expect(layout(['twoColumnStep' => false])->imageSizes('thirds', 1 / 3)['srcsetSizes'])->toBe(['448w', '628w', '788w', '284w', '357w']);
     });
 
     it('lists every srcset width once', function() {

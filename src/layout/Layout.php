@@ -171,8 +171,22 @@ final class Layout
     }
 
     /**
+     * Row width (px) from which a row with a 1/3 column shows two equal columns until its own breakpoint (twoColumnStep): both
+     * halves are then at least columnMinWidth wide. The third column of thirds wraps below, as a half on the left. Null for full
+     * and halves, and with twoColumnStep off.
+     */
+    public function twoColumnBreakpoint(string $layout): ?int
+    {
+        if (!$this->config->twoColumnStep || $this->breakpoint($layout) <= $this->breakpoint('halves')) {
+            return null;
+        }
+        $gap = $this->columnGap($layout);
+        return (int)round(($this->config->columnMinWidth + $gap) * 2 - $gap);
+    }
+
+    /**
      * `sizes` and the srcset widths for an image that fills a column of the given fraction of the row, on a page where the
-     * content builder has this width.
+     * content builder has this width. In the two-column step (see twoColumnBreakpoint()) every column is a half.
      *
      * @return array{sizes: string, srcsetSizes: string[]}
      */
@@ -181,6 +195,8 @@ final class Layout
         $containers = $this->config->containers;
         $gap = $this->config->columnGap;
         $layoutGap = $this->columnGap($layout);
+        $breakpoint = $this->breakpoint($layout);
+        $twoColumnBreakpoint = $this->twoColumnBreakpoint($layout);
         $viewports = array_keys($containers);
         $sizes = ['(max-width: ' . ($viewports[0] - 1) . 'px) ' . $this->config->mobileSize];
         $srcset = [];
@@ -190,9 +206,12 @@ final class Layout
                 // The content builder and the sidebar are columns of a grid with the column gap between them
                 $builder = (int)round($pageWidth * ($builder + $gap) - $gap);
             }
-            $width = $builder >= $this->breakpoint($layout)
-                ? (int)round($fraction * ($builder + $layoutGap) - $layoutGap)
-                : $builder;
+            $width = match (true) {
+                $builder >= $breakpoint => (int)round($fraction * ($builder + $layoutGap) - $layoutGap),
+                $twoColumnBreakpoint !== null && $builder >= $twoColumnBreakpoint
+                    => (int)round(($builder + $layoutGap) / 2 - $layoutGap),
+                default => $builder,
+            };
 
             $next = $viewports[$i + 1] ?? null;
             $sizes[] = "(min-width: {$viewport}px)" . ($next ? ' and (max-width: ' . ($next - 1) . 'px)' : '') . " {$width}px";
