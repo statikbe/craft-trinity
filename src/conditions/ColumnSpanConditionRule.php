@@ -8,8 +8,8 @@ use statikbe\trinity\Trinity;
 
 /**
  * Entry condition rule "Column span": the share of its row a cell takes, from the row's layout and the cell's column, the same
- * on every page (a cell that fills its row is "full row" on a 2/3 page too). E.g. "is one of: full row" for a field only when the
- * cell has the row to itself, "is not one of: full row" for the reverse. For conditions about the room a field gets on the page,
+ * on every page (a cell that fills its row is "Full row" on a 2/3 page too). E.g. "is one of: Full row" for a field only when the
+ * cell has the row to itself, "is not one of: Full row" for the reverse. For conditions about the room a field gets on the page,
  * use "Column width".
  */
 class ColumnSpanConditionRule extends BaseColumnConditionRule
@@ -33,7 +33,7 @@ class ColumnSpanConditionRule extends BaseColumnConditionRule
         arsort($fractions);
         $layouts = Trinity::getInstance()->getLayouts();
         return array_map(fn(float $fraction) => $fraction >= 1
-            ? Craft::t('trinity', 'full row')
+            ? Craft::t('trinity', 'Full row')
             : Craft::t('trinity', '{width} of the row', ['width' => $layouts->formatWidth($fraction)]), $fractions);
     }
 

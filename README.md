@@ -199,7 +199,7 @@ In a field layout, open a field's settings → *Visibility Conditions* → *Entr
 
 - **Row cells** (in the row entry type's layout): whether the row has a cell of one of the chosen types, e.g. a
   background colour only when the row has no FAQ. The control panel re-checks it when cells are added or removed.
-- **Column span** (in a cell type's layout): the cell's share of the row: full row, 2/3, 1/2 or 1/3 of the row, the same on
+- **Column span** (in a cell type's layout): the cell's share of the row: Full row, 2/3, 1/2 or 1/3 of the row, the same on
   every page. For conditions about the layout, e.g. a field only when the cell has the row to itself.
 - **Column width** (in a cell type's layout): the cell's effective width on the page, e.g. 1/3 of the page for a 1/2 column on
   a 2/3 page. For conditions about room, e.g. *is not one of 1/4, 1/3 of the page* for a field that needs some width.
@@ -209,7 +209,7 @@ outside a row has no column: *is not one of* matches it. Their values are stored
 
 ![The Row cells condition: Row cells is not one of FAQ](docs/images/condition-row-cells.png)
 
-![The Column width condition: Column width is one of full page width](docs/images/condition-column-width.png)
+![The Column width condition: Column width is one of Full page width](docs/images/condition-column-width.png)
 
 ## Control panel
 

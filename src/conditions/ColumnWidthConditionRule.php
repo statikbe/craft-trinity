@@ -35,7 +35,7 @@ class ColumnWidthConditionRule extends BaseColumnConditionRule
             }
         }
         arsort($widths);
-        return array_map(fn(float $width) => $rows->formatPageWidth($width), $widths);
+        return array_map(fn(float $width) => $rows->formatPageWidth($width, true), $widths);
     }
 
     protected function columnValue(array $column): float

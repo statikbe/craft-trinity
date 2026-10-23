@@ -1,5 +1,10 @@
 # Release Notes for Trinity
 
+## 1.3.1 - 2026-10-23
+
+### Changed
+- Labels that stand on their own start with a capital, following the Statik code guidelines (sentence case): the "Column span" option "Full row", and "Full page width" in the "Column width" options and on a cell card's width label. Inside a sentence, such as a validation message, the width stays lowercase. Saved conditions are unaffected: they store the widths, not the labels
+
 ## 1.3.0 - 2026-10-23
 
 ### Added

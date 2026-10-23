@@ -5,8 +5,9 @@ return [
     'Column span' => 'Kolombreedte in de rij',
     'Column width' => 'Kolombreedte op de pagina',
     'Row cells' => 'Cellen in de rij',
+    'Full page width' => 'Volledige paginabreedte',
+    'Full row' => 'Volledige rij',
     'full page width' => 'volledige paginabreedte',
-    'full row' => 'volledige rij',
     '{width} of the page' => '{width} van de pagina',
     '{width} of the row' => '{width} van de rij',
 

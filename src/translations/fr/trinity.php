@@ -5,8 +5,9 @@ return [
     'Column span' => 'Largeur de la colonne dans la rangée',
     'Column width' => 'Largeur de la colonne sur la page',
     'Row cells' => 'Cellules de la rangée',
+    'Full page width' => 'Pleine largeur de la page',
+    'Full row' => 'Rangée entière',
     'full page width' => 'pleine largeur de la page',
-    'full row' => 'rangée entière',
     '{width} of the page' => '{width} de la page',
     '{width} of the row' => '{width} de la rangée',
 

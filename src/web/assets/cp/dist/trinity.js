@@ -70,10 +70,10 @@
         return `${Math.round(width * 100)}%`;
     };
 
-    /** Width of a column on the page, for editors: "1/2 of the page", "full page width" */
+    /** Width of a column on the page, for editors: "1/2 of the page", "Full page width" (it starts the card's label) */
     const formatPageWidth = (width) => {
         const fraction = formatWidth(width);
-        return fraction === 'full' ? Craft.t('trinity', 'full page width') : Craft.t('trinity', '{width} of the page', {width: fraction});
+        return fraction === 'full' ? Craft.t('trinity', 'Full page width') : Craft.t('trinity', '{width} of the page', {width: fraction});
     };
 
     const GridRow = Garnish.Base.extend({

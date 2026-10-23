@@ -48,7 +48,7 @@ class TrinityCpAsset extends AssetBundle
             'This block needs a narrower column: choose another layout or move it.',
             'This block needs a wider column: choose another layout or move it.',
             'This layout has columns that are too narrow for this page.',
-            'full page width',
+            'Full page width',
             'not with {type}',
             'too narrow',
             'too wide',

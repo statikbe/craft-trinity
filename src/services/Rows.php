@@ -197,13 +197,14 @@ class Rows extends Component
     }
 
     /**
-     * Width of a column on the page, for editors: "1/2 of the page", "full page width".
+     * Width of a column on the page, for editors: "1/2 of the page", "full page width". $label: on its own (an option, the start of
+     * a label), so "Full page width"; otherwise it's part of a sentence ("… in column 1 (full page width) …").
      */
-    public function formatPageWidth(float $width): string
+    public function formatPageWidth(float $width, bool $label = false): string
     {
         $fraction = $this->getLayouts()->formatWidth($width);
         return $fraction === 'full'
-            ? Craft::t('trinity', 'full page width')
+            ? ($label ? Craft::t('trinity', 'Full page width') : Craft::t('trinity', 'full page width'))
             : Craft::t('trinity', '{width} of the page', ['width' => $fraction]);
     }
 
