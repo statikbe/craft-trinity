@@ -1,5 +1,9 @@
 # Release Notes for Trinity
 
+## 1.3.3 - 2026-10-31
+
+### Changed
+- The "Row cells" condition (e.g. a row's background colour shown only without an FAQ) and the column conditions load the cells of all rows of a page in one query, instead of one query per row: on the front end, in the control panel and for other plugins that check whether a field is shown (`Rows::showsField()`). On a page with 19 rows, the row conditions took 4 queries instead of 21. New: `Rows::allCells()`, the cells of a row with the disabled ones
 ## 1.3.2 - 2026-10-30
 
 ### Fixed

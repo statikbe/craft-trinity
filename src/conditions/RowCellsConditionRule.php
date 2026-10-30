@@ -9,8 +9,6 @@ use craft\db\Query;
 use craft\db\Table;
 use craft\elements\conditions\ElementConditionRuleInterface;
 use craft\elements\db\ElementQueryInterface;
-use craft\elements\db\EntryQuery;
-use craft\elements\ElementCollection;
 use craft\elements\Entry;
 use statikbe\trinity\Trinity;
 
@@ -77,9 +75,7 @@ class RowCellsConditionRule extends BaseMultiSelectConditionRule implements Elem
         if (!$element instanceof Entry || !$element->getFieldLayout()?->getFieldByHandle($handle)) {
             return [];
         }
-        $value = $element->getFieldValue($handle);
-        /** @var Entry[] $cells */
-        $cells = $value instanceof EntryQuery ? (clone $value)->status(null)->all() : ($value instanceof ElementCollection ? $value->all() : []);
+        $cells = Trinity::getInstance()->getRows()->allCells($element);
         return array_values(array_unique(array_map(fn(Entry $cell) => $cell->getType()->uid, $cells)));
     }
 }

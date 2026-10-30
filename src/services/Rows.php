@@ -26,6 +26,9 @@ use yii\base\InvalidConfigException;
  */
 class Rows extends Component
 {
+    /** @var \WeakMap<Entry, bool>|null whether a result set (by its first element) is in one site */
+    private ?\WeakMap $oneSite = null;
+
     /**
      * @event DefinePageWidthEvent The width of the content builder on a page, to override the configured one
      */
@@ -403,8 +406,7 @@ class Rows extends Component
      */
     private function columnIndex(Entry $row, Entry $cell): ?int
     {
-        $value = $row->getFieldValue($this->getSettings()->cellsField);
-        $cells = $value instanceof EntryQuery ? (clone $value)->status(null)->all() : ($value instanceof ElementCollection ? $value->all() : []);
+        $cells = $this->allCells($row);
         // A cell edited in a slideout can be a draft of the cell in the row
         $ids = array_filter([$cell->id, $cell->getCanonicalId()]);
 
@@ -418,6 +420,58 @@ class Rows extends Component
             }
         }
         return null;
+    }
+
+    /**
+     * The cells in a row's columns, disabled ones included (the editor sees them too). Loaded for all rows of the same query
+     * at once (eager loading under its own alias, as the templates load only the enabled cells), so a page's conditions on
+     * rows and cells cost one query, not one per row. Cells posted with the row (an edit in the control panel) are used as
+     * they are.
+     *
+     * @return Entry[]
+     */
+    public function allCells(Entry $row): array
+    {
+        $value = $row->getFieldValue($this->getSettings()->cellsField);
+        if (!$value instanceof EntryQuery) {
+            $cells = $value instanceof ElementCollection ? $value->all() : [];
+        } else {
+            $query = (clone $value)->status(null);
+            if ($this->oneSite($row)) {
+                $query->eagerly('trinity:allCells');
+            }
+            $cells = $query->all();
+        }
+        return array_values(array_filter($cells, fn($cell) => $cell instanceof Entry));
+    }
+
+    /**
+     * Whether the rows fetched together with this one are all in its site: Craft eager-loads nested entries in the site of
+     * the element that asks, so rows of other sites would get this site's cells. Kept per result set.
+     */
+    private function oneSite(Entry $row): bool
+    {
+        $result = $row->elementQueryResult ?? null;
+        if (!$result) {
+            return true;
+        }
+        $first = reset($result);
+        if (!$first instanceof Entry) {
+            return false;
+        }
+        $this->oneSite ??= new \WeakMap();
+        if (!isset($this->oneSite[$first])) {
+            $siteId = $first->siteId;
+            $same = true;
+            foreach ($result as $element) {
+                if ($element->siteId !== $siteId) {
+                    $same = false;
+                    break;
+                }
+            }
+            $this->oneSite[$first] = $same;
+        }
+        return $this->oneSite[$first] && $row->siteId === $first->siteId;
     }
 
     private function columnKey(Entry $cell): string
