@@ -1,5 +1,9 @@
 # Release Notes for Trinity
 
+## 1.3.2 - 2026-10-30
+
+### Fixed
+- Errors on a row's layout or columns field from other checks than Trinity's (e.g. a project's own validation of the columns' content) stayed visible only in the error summary: the control panel removed them from the row as soon as the row's layout was valid. They now stay on the row until the next save; Trinity's own errors still disappear once the editor fixes the layout or the columns
 ## 1.3.1 - 2026-10-23
 
 ### Changed

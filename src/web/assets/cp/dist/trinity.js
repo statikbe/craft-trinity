@@ -96,6 +96,7 @@
         sort: null,
         dragging: null,
         $errorFields: null,
+        savedState: null,
         blockTypes: null,
 
         init(row, cardsContainer, nem, listbox, config) {
@@ -389,8 +390,12 @@
 
             this.hideDisallowedLayouts();
             this.hookCardDrag();
-            // Fixed (all columns filled, every block fits, allowed layout): the errors of the failed save no longer apply
-            if (this.$errorFields && !this.empties.length && ids.length === columns && this.isAllowed(layout)
+            // Fixed (all columns filled, every block fits, allowed layout): the errors of the failed save no longer apply. Only
+            // after the editor changed the layout or the columns: errors from other checks (e.g. a project's own validation of
+            // the columns' content) stay until the next save
+            const state = `${layout}|${ids.join(',')}`;
+            this.savedState ??= state;
+            if (this.$errorFields && state !== this.savedState && !this.empties.length && ids.length === columns && this.isAllowed(layout)
                 && !items.some(({li}) => li.classList.contains('trinity__invalid'))) {
                 this.clearSavedErrors();
             }
