@@ -21,7 +21,7 @@ Your project owns the entry types and the templates. Trinity provides:
 
 ## Requirements
 
-Craft CMS 5.10 or later, PHP 8.2 or later.
+Craft CMS 5.12 or later, PHP 8.2 or later.
 
 ## Installation
 
@@ -38,7 +38,7 @@ control panel:
 | Part | What it is |
 |---|---|
 | Row entry type (`gridRow`) | An entry type in your content builder Matrix, with the two fields below. Add anything else a row needs (alignment, background, …). |
-| Layout field (`gridLayout`) | A **Button Group** with these option values: `full`, `halves`, `thirds`, `thirdTwoThirds`, `twoThirdsThird`. Leave out the ones you don't want. Icons: `@statikbe/trinity/icons/layouts/<value>.svg`. |
+| Layout field (`gridLayout`) | A **Button Group** with these option values: `full`, `halves`, `thirds`, `thirdTwoThirds`, `twoThirdsThird`. Leave out the ones you don't want. Icons: pick them from the **Trinity** icon set (`trinity:<value>`, e.g. `trinity:halves`) and turn on **Icons only**. |
 | Cells field (`gridCells`) | A **Matrix** field in **cards** view, max 3 entries: one cell per column, left to right. |
 | Cell entry types (`cell…`) | One entry type per kind of column content, e.g. `cellText`, `cellImage`. Their handle without the prefix is the cell's type in templates and CSS (`cellText` → `text`). |
 | Mobile order field (`mobileOrder`) | A **Dropdown** with the options *Auto* (empty value), `1`, `2`, `3`, on **every** cell type, except types that can only be full width (`minWidthPerType` 1): they are alone in their row. |
@@ -52,6 +52,11 @@ The layouts are fixed: the validation, the conditions and the control panel laye
 | `thirds` | 1/3 + 1/3 + 1/3 |
 | `thirdTwoThirds` | 1/3 + 2/3 |
 | `twoThirdsThird` | 2/3 + 1/3 |
+
+Trinity registers an icon set with an icon per layout (handle `trinity`, from `src/icons/layouts`), so the layout field's options
+use them like any other Craft icon: choose them in the icon picker of the options, or set `icon: 'trinity:<layout>'` in project
+config. Icons set as a file (`@statikbe/trinity/icons/layouts/<layout>.svg`, before 1.4) still work; updating to 1.4 switches
+them to the icon set.
 
 Run `php craft trinity/doctor` to check the setup.
 

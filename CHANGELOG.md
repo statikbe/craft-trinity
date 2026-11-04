@@ -1,5 +1,15 @@
 # Release Notes for Trinity
 
+## 1.4.0 - 2026-11-04
+
+### Added
+- The layout icons are a Craft icon set (Craft 5.12): `trinity:full`, `trinity:halves`, `trinity:thirds`, `trinity:thirdTwoThirds` and `trinity:twoThirdsThird`. The layout field's options use them like any other icon, and they are in the icon picker of a Button Group's options (set "Trinity")
+- `craft trinity/doctor` checks icons from an icon set, and warns about layout icons that are still set as a file
+
+### Changed
+- Requires Craft CMS 5.12 or later
+- Updating runs a migration: option fields whose icons are Trinity's layout files (`@statikbe/trinity/icons/layouts/<layout>.svg`) get the icon from the set instead (`trinity:<layout>`). The layout field (`layoutField`) also gets the icon of its layout on options without an icon, and shows icons only. On other environments the change comes with the project config. The labels of the options stay, as the buttons' tooltip and accessible name
+
 ## 1.3.3 - 2026-10-31
 
 ### Changed

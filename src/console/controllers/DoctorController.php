@@ -9,6 +9,7 @@ use craft\fields\BaseOptionsField;
 use craft\fields\ButtonGroup;
 use craft\fields\Matrix;
 use craft\helpers\Console;
+use craft\services\Icons;
 use statikbe\trinity\layout\Layout;
 use statikbe\trinity\layout\LayoutConfig;
 use statikbe\trinity\Trinity;
@@ -72,10 +73,18 @@ class DoctorController extends Controller
                     $this->addError("Layout field option \"{$option['value']}\" is not a layout; use one of: " . implode(', ', array_keys(Layout::LAYOUTS)) . '.');
                 }
                 $icon = $option['icon'] ?? null;
-                if ($icon && str_starts_with($icon, '@')) {
+                $setIcon = Trinity::ICON_SET . ':' . $option['value'];
+                if ($icon && ($customIcon = Icons::parse($icon))) {
+                    [$setHandle, $name] = $customIcon;
+                    if (Craft::$app->getIcons()->getIconSetByHandle($setHandle)?->getSvg($name) === null) {
+                        $this->addError("Layout field option \"{$option['value']}\": icon \"{$icon}\" doesn't exist.");
+                    }
+                } elseif ($icon && str_starts_with($icon, '@')) {
                     $path = Craft::getAlias($icon, false);
                     if (!$path || !is_file($path)) {
                         $this->addError("Layout field option \"{$option['value']}\": icon \"{$icon}\" doesn't exist.");
+                    } elseif (str_starts_with($icon, '@statikbe/trinity/')) {
+                        $this->addWarning("Layout field option \"{$option['value']}\": use the icon from the Trinity icon set (\"{$setIcon}\") instead of the file \"{$icon}\".");
                     }
                 }
             }

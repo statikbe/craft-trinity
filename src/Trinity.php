@@ -12,8 +12,11 @@ use craft\elements\conditions\entries\EntryCondition;
 use craft\elements\Entry;
 use craft\events\DefineFieldHtmlEvent;
 use craft\events\RegisterConditionRulesEvent;
+use craft\events\RegisterIconSetsEvent;
 use craft\fields\Matrix;
 use craft\helpers\Html;
+use craft\icons\DirectoryIconSet;
+use craft\services\Icons;
 use craft\web\twig\variables\CraftVariable;
 use statikbe\trinity\conditions\ColumnSpanConditionRule;
 use statikbe\trinity\conditions\ColumnWidthConditionRule;
@@ -37,7 +40,12 @@ use yii\base\Event;
  */
 class Trinity extends Plugin
 {
-    public string $schemaVersion = '1.0.0';
+    /**
+     * Handle of the icon set with the layout icons (src/icons/layouts), for the options of the layout field: `trinity:halves` …
+     */
+    public const ICON_SET = 'trinity';
+
+    public string $schemaVersion = '1.1.0';
 
     private ?Layout $_layouts = null;
 
@@ -58,6 +66,15 @@ class Trinity extends Plugin
             /** @var CraftVariable $variable */
             $variable = $event->sender;
             $variable->set('trinity', TrinityVariable::class);
+        });
+
+        // The layout icons as an icon set: the layout field's options use them like any other icon (`trinity:<layout>`)
+        Event::on(Icons::class, Icons::EVENT_REGISTER_ICON_SETS, function(RegisterIconSetsEvent $event) {
+            $event->iconSets[] = new DirectoryIconSet([
+                'handle' => self::ICON_SET,
+                'name' => 'Trinity',
+                'path' => __DIR__ . '/icons/layouts',
+            ]);
         });
 
         // "Row cells" condition rule, e.g. to show a row's field only for some cell types

@@ -205,3 +205,13 @@ describe('formatWidth', function() {
         [0.37, '0.37'],
     ]);
 });
+
+describe('icons', function() {
+    it('has an icon in the Trinity icon set for every layout', function() {
+        $icons = array_map(fn(string $file) => basename($file, '.svg'), glob(dirname(__DIR__, 2) . '/src/icons/layouts/*.svg'));
+        sort($icons);
+        $layouts = array_keys(Layout::LAYOUTS);
+        sort($layouts);
+        expect($icons)->toBe($layouts);
+    });
+});
