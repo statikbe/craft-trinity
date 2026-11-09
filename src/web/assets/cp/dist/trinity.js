@@ -12,7 +12,7 @@
  *    entry to another owner, so it is duplicated into that row (like Copy + Paste) and then deleted here.
  * Empty columns only exist here: saving a row with fewer blocks than columns fails validation (Rows::validateRow()).
  *  - with rowSpacingField set, that Button Group is hidden and its options are shown as a compact "Space above" control at the
- *    top of every row in the content builder but the first; the block's gap follows the choice (close / extra) as a hint. With
+ *    top of every row in the content builder but the first (the gap between the blocks stays the same). With
  *    rowBackgroundField, a row whose background differs from the row above shows why instead of the options.
  * Settings and field handles come from Rows::cpConfig(), in a [data-trinity] element in the cells field.
  * When Craft's CP changes and this breaks, the native fields keep working without it.
@@ -98,6 +98,9 @@
         $errorFields: null,
         savedState: null,
         blockTypes: null,
+        entry: null,
+        summary: '',
+        $summary: null,
 
         init(row, cardsContainer, nem, listbox, config) {
             this.$row = $(row);
@@ -112,6 +115,7 @@
 
             this.hideDisallowedLayouts();
             this.initSpacing();
+            this.initSummary();
 
             this.$addLeft = this.addColumnButton('left');
             this.$addRight = this.addColumnButton('right');
@@ -193,6 +197,64 @@
             listbox.on('change', update);
             update();
             watchBuilder(this.$row[0].parentElement, this.config);
+        },
+
+        // Row summary
+        // ---------------------------------------------------------------------
+
+        /**
+         * The title bar of a row in a content builder shows its columns from left to right ("Text + Image") and its UI label
+         * (e.g. the heading of its first column, from the entry type's UI label format), collapsed and expanded. A collapsed
+         * row shows that instead of Craft's preview: the bare values of its fields ("Top | Auto") say little without their labels.
+         */
+        initSummary() {
+            const entry = this.$row.hasClass('matrixblock') ? this.$row.data('entry') : null;
+            const $titlebar = this.$row.children('.titlebar');
+            if (!entry?.previewHtml || !$titlebar.length) {
+                return;
+            }
+            this.entry = entry;
+            $titlebar.children('.trinity-summary').remove();
+            this.$summary = $('<div/>', {class: 'trinity-summary'}).insertAfter($titlebar.children('.blocktype').first());
+
+            entry.trinityFieldsPreview ??= entry.previewHtml;
+            entry.previewHtml = () => this.summary ? '' : entry.trinityFieldsPreview.call(entry);
+
+            // Craft sets the UI label after the form changes (e.g. a new heading): keep the summary up to date
+            let uiLabel = entry.uiLabel;
+            Object.defineProperty(entry, 'uiLabel', {
+                configurable: true,
+                get: () => uiLabel,
+                set: (value) => {
+                    uiLabel = value;
+                    this.updateSummary();
+                },
+            });
+        },
+
+        updateSummary(items = null) {
+            if (items) {
+                this.summary = items
+                    .map(({li}) => {
+                        const typeId = $(li).children('.element').data('entry-type-id');
+                        return typeId === undefined ? Craft.t('trinity', 'Empty') : this.typeName(typeId);
+                    })
+                    .join(' + ');
+            }
+            if (!this.$summary) {
+                return;
+            }
+            const label = (this.entry.uiLabel ?? '').trim();
+            const html = this.summary
+                ? `<span class="trinity-summary__columns">${Craft.escapeHtml(this.summary)}</span>`
+                    + (label ? `<span class="trinity-summary__separator">|</span><span class="trinity-summary__label">${Craft.escapeHtml(label)}</span>` : '')
+                : '';
+            if (this.$summary.html() !== html) {
+                this.$summary.html(html).attr('title', label ? `${this.summary} | ${label}` : null);
+            }
+            if (this.entry.collapsed) {
+                this.entry.$previewContainer.html(this.entry.previewHtml());
+            }
         },
 
         /** Layouts that can't be used here are hidden; the selected one stays visible (marked) so it can be changed */
@@ -402,6 +464,7 @@
             const canAdd = columns < 3 && this.isAllowed(LAYOUT_FOR_COLUMNS[columns + 1]);
             this.$addLeft.add(this.$addRight).toggleClass('hidden', !canAdd);
             this.positionAddButtons();
+            this.updateSummary(items);
             // Content is added through the empty columns, not the field's own "Add" button
             this.nem.$createBtn?.addClass('hidden').closest('.expandable-button--collapsed').addClass('hidden');
 
@@ -777,6 +840,7 @@
             }
             this.$addLeft?.remove();
             this.$addRight?.remove();
+            this.$summary?.remove();
             this.$cards.removeClass('trinity');
             this.base();
         },

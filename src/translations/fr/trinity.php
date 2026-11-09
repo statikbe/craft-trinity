@@ -30,6 +30,7 @@ return [
     'Not with {type}' => 'Pas avec {type}',
     'Not available: the row above has another background' => 'Non disponible : la rangée au-dessus a un autre arrière-plan',
     'Only between rows with the same background' => 'Uniquement entre des rangées avec le même arrière-plan',
+    'Empty' => 'Vide',
     'Space above' => 'Espace au-dessus',
     'not with {type}' => 'pas avec {type}',
     'This block can’t be in the same row as {type}: choose another block or move it.' => 'Ce bloc ne peut pas être dans la même rangée que {type} : choisissez un autre bloc ou déplacez-le.',

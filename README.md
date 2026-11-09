@@ -249,7 +249,7 @@ and `extra` (icons help), and name it in the settings:
 ```
 
 The control panel then hides the field and shows its options as a small *Space above* control at the top of every row except
-the first one in the content builder, and the gap between the blocks follows the choice (`close` and `extra`) as a hint.
+the first one in the content builder. The gap between the blocks stays the same, whatever the choice.
 Clicking an option sets the field, so drafts, autosave and revisions work as for any field.
 
 Spacing usually only applies between rows with the same background. Name the background field too, and on a row whose

@@ -187,7 +187,7 @@
   box-shadow: inset 0 0 0 2px var(--error-color);
 }
 
-/* "Space above" (rowSpacingField): a compact control at the top of a row's block; the block's gap follows the choice */
+/* "Space above" (rowSpacingField): a compact control at the top of a row's block. The gap between the blocks stays the same */
 .matrixblock > .trinity-spacing {
   display: flex;
   /* The label and the options or reason have different sizes: align their text, not their boxes */
@@ -259,6 +259,46 @@
   outline-offset: -2px;
 }
 
+/* A collapsed row is only its title bar: the control would take its place */
+.matrixblock.collapsed > .trinity-spacing {
+  display: none;
+}
+
+/* The row's columns and UI label in its title bar ("Text + Image | Welcome"), collapsed and expanded */
+.matrixblock > .titlebar > .trinity-summary {
+  display: flex;
+  min-width: 0;
+  gap: 6px;
+  align-items: baseline;
+  overflow: hidden;
+  font-size: 11.2px;
+  white-space: nowrap;
+}
+
+.trinity-summary:empty {
+  display: none;
+}
+
+/* Craft's title bar is a grid of two columns (block type | tabs or preview): the summary gets a column of its own, or the
+   tabs wrap to a second line */
+.matrixblock > .titlebar:has(> .trinity-summary:not(:empty)) {
+  grid-template-columns: auto minmax(0, auto) minmax(0, 1fr);
+}
+
+.trinity-summary__columns {
+  flex: none;
+  font-weight: 600;
+}
+
+.trinity-summary__separator {
+  opacity: 0.5;
+}
+
+.trinity-summary__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* Another background than the row above: the spacing doesn't apply, the reason replaces the options */
 .trinity-spacing__reason {
   display: none;
@@ -272,13 +312,4 @@
 
 .matrixblock.trinity-spacing-inactive > .trinity-spacing .trinity-spacing__reason {
   display: inline;
-}
-
-/* The gap between rows hints at the choice */
-.matrixblock[data-trinity-spacing='close']:not(.trinity-first-row, .trinity-spacing-inactive) {
-  margin-top: -6px;
-}
-
-.matrixblock[data-trinity-spacing='extra']:not(.trinity-first-row, .trinity-spacing-inactive) {
-  margin-top: 24px;
 }

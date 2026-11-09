@@ -36,6 +36,7 @@ class TrinityCpAsset extends AssetBundle
             'Add a column on the right',
             'Add content',
             'Does not fit the layout',
+            'Empty',
             'Max. width {width}',
             'Merge with left',
             'Merge with right',

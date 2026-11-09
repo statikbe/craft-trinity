@@ -30,6 +30,7 @@ return [
     'Not with {type}' => 'Niet met {type}',
     'Not available: the row above has another background' => 'Niet beschikbaar: de rij erboven heeft een andere achtergrond',
     'Only between rows with the same background' => 'Alleen tussen rijen met dezelfde achtergrond',
+    'Empty' => 'Leeg',
     'Space above' => 'Ruimte boven',
     'not with {type}' => 'niet met {type}',
     'This block can’t be in the same row as {type}: choose another block or move it.' => 'Dit blok kan niet in dezelfde rij staan als {type}: kies een ander blok of verplaats het.',

@@ -1,5 +1,12 @@
 # Release Notes for Trinity
 
+## 1.5.0 - 2026-11-09
+
+### Changed
+- A row's title bar shows its columns from left to right, e.g. "Text + Image" (an empty column is "Empty"), followed by the row's UI label, both when the row is collapsed and expanded. A collapsed row shows that instead of the values of its fields. Give the row entry type a UI label format that names the row, e.g. the title of its first column: `{{ object.gridCells.all()|map(cell => cell.blockTitle ?? '')|filter|first|default('') }}`
+- The gap between rows in the control panel no longer follows their "Space above" choice (`close`, `extra`): the rows stay in place when the spacing changes
+- The "Space above" control is hidden while a row is collapsed. Before, it took the collapsed row's place, so the row's title bar wasn't visible
+
 ## 1.4.0 - 2026-11-04
 
 ### Added
