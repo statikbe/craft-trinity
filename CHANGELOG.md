@@ -1,5 +1,10 @@
 # Release Notes for Trinity
 
+## 1.5.1 - 2026-11-09
+
+### Fixed
+- A row whose UI label format renders nothing (e.g. a column without a title) showed Craft's fallback label in its title bar, such as "Entry 786635". The title bar now shows only the columns then
+
 ## 1.5.0 - 2026-11-09
 
 ### Changed

@@ -295,6 +295,12 @@ class Rows extends Component
             'maxWidthPerType' => $maxWidthPerType,
             'blockedCombinations' => $blockedCombinations,
             'hasBlockConditions' => $this->hasBlockConditions(),
+            // What Craft shows for a row whose UI label format renders nothing ("Entry 1234", "New entry", see
+            // Element::__toString()): the row summary leaves it out
+            'fallbackLabels' => [
+                'prefix' => Entry::displayName(),
+                'new' => Craft::t('app', 'New {type}', ['type' => Entry::lowerDisplayName()]),
+            ],
         ];
     }
 

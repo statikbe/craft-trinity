@@ -232,6 +232,18 @@
             });
         },
 
+        /** The row's UI label, without Craft's fallback for a format that renders nothing ("Entry 1234", "New entry") */
+        rowLabel() {
+            const label = (this.entry.uiLabel ?? '').trim();
+            const fallback = this.config.fallbackLabels;
+            if (!fallback) {
+                return label;
+            }
+            const isFallback = label === fallback.new
+                || (label.startsWith(`${fallback.prefix} `) && /^\d+$/.test(label.substring(fallback.prefix.length + 1)));
+            return isFallback ? '' : label;
+        },
+
         updateSummary(items = null) {
             if (items) {
                 this.summary = items
@@ -244,7 +256,7 @@
             if (!this.$summary) {
                 return;
             }
-            const label = (this.entry.uiLabel ?? '').trim();
+            const label = this.rowLabel();
             const html = this.summary
                 ? `<span class="trinity-summary__columns">${Craft.escapeHtml(this.summary)}</span>`
                     + (label ? `<span class="trinity-summary__separator">|</span><span class="trinity-summary__label">${Craft.escapeHtml(label)}</span>` : '')
