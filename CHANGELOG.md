@@ -1,5 +1,10 @@
 # Release Notes for Trinity
 
+## 1.5.2 - 2026-11-26
+
+### Fixed
+- The Entry Type menu in a block's slideout offered every type, also the ones that don't fit the block's column (e.g. Call to action in a 1/2 column) or can't be in a row with the other blocks. Those types are now disabled, with the reason under them, as in the "Add content" menu
+
 ## 1.5.1 - 2026-11-09
 
 ### Fixed

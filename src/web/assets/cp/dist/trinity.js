@@ -339,9 +339,12 @@
             return (this.nem.settings.createAttributes ?? []).find((attributes) => attributes.attributes.typeId == typeId)?.label ?? '';
         },
 
-        /** Why a type can't be added to an empty column of this width (shown under it in the "Add content" menu), or null */
-        addHint(typeId, width) {
-            const other = this.blockedBy(typeId, this.cardTypeIds());
+        /**
+         * Why a type can't be added to an empty column of this width (shown under it in the "Add content" menu), or null.
+         * With except (a card element), why that card can't switch to the type (its Entry Type menu, see updateTypeMenu()).
+         */
+        addHint(typeId, width, except = null) {
+            const other = this.blockedBy(typeId, this.cardTypeIds(except));
             return this.sizeHint(typeId, width)
                 ?? (other !== null ? Craft.t('trinity', 'Not with {type}', {type: this.typeName(other)}) : null);
         },
@@ -937,6 +940,54 @@
         configEl.dataset.trinityRow = 'true';
         new GridRow(row, cardsContainer, nem, listbox, config);
     };
+
+    /**
+     * The Entry Type menu in the slideout of a block in a row: the types that don't fit the block's column, or can't be in a
+     * row with the other blocks, are disabled with the reason under them (as in the "Add content" menu). Checked every time
+     * the menu opens, so it follows the current layout. Saving such a switch would fail validation anyway (Rows::validateRow()).
+     */
+    const updateTypeMenu = (ev) => {
+        const menu = ev.target;
+        if (!menu.$anchor?.closest('.entry-type-select').length) {
+            return;
+        }
+        const id = $(menu.$anchor.closest('.slideout').data('slideout')?.$element).data('id');
+        if (!id) {
+            return;
+        }
+        for (const row of rows) {
+            const element = row.getList().children('li').children(`.element[data-id="${id}"]`)[0];
+            if (!element) {
+                continue;
+            }
+            const li = element.parentElement;
+            const span = parseInt(li.style.gridColumn.replace('span', ''), 10);
+            if (li.classList.contains('trinity__overflow') || !span) {
+                return;
+            }
+            const width = row.pageWidth(span);
+            menu.$options.each((i, option) => {
+                // The current type stays selectable, also when it doesn't fit (the card shows why)
+                const hint = option.classList.contains('sel') ? null : row.addHint($(option).data('value'), width, element);
+                option.classList.toggle('disabled', hint !== null);
+                option.disabled = hint !== null;
+                hint !== null ? option.setAttribute('aria-disabled', 'true') : option.removeAttribute('aria-disabled');
+                const label = option.querySelector('.label');
+                let description = label?.querySelector('.trinity__type-hint');
+                if (hint !== null && label && !description) {
+                    description = Object.assign(document.createElement('span'), {className: 'trinity__type-hint smalltext light'});
+                    label.append(description);
+                }
+                if (description) {
+                    description.textContent = hint ?? '';
+                    description.hidden = hint === null;
+                }
+            });
+            return;
+        }
+    };
+    // Garnish.CustomSelect is the menu of Craft's custom selects (the Entry Type field); Garnish.Menu is the same class or a subclass
+    Garnish.on(Garnish.CustomSelect, 'show', updateTypeMenu);
 
     const scan = (root) => {
         $(root).find('[data-trinity]').addBack('[data-trinity]').each((i, configEl) => initRow(configEl));

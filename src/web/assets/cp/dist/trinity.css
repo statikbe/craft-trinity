@@ -313,3 +313,8 @@
 .matrixblock.trinity-spacing-inactive > .trinity-spacing .trinity-spacing__reason {
   display: inline;
 }
+
+/* Why a type can't be chosen in a block's Entry Type menu (updateTypeMenu() in trinity.js) */
+.trinity__type-hint {
+  display: block;
+}
